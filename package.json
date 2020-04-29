@@ -1,5 +1,5 @@
 {
-  "name": "tanks",
+  "name": "cheat-cooperate",
   "version": "1.0.0",
   "description": "A node multiplayer game",
   "main": "index.js",
@@ -8,20 +8,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bearbob/node-tanks.git"
+    "url": "git+https://github.com/bearbob/cheat-cooperate.git"
   },
   "keywords": [
     "node",
-    "battle",
-    "tanks",
+    "trust",
+    "cooperation",
     "multiplayer"
   ],
   "author": "Bjoern Schmidt",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/bearbob/node-tanks/issues"
+    "url": "https://github.com/bearbob/cheat-cooperate/issues"
   },
-  "homepage": "https://github.com/bearbob/node-tanks#readme",
+  "homepage": "https://github.com/bearbob/cheat-cooperate#readme",
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
