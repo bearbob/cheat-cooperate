@@ -52,6 +52,7 @@ const TEXTSIZE = 16;
 
 var canvas = document.getElementById('interface_canvas');
 var ctx = canvas.getContext('2d');
+const rc = rough.canvas(document.getElementById('interface_canvas'));
 
 //Function to get the mouse position
 function getMousePos(canvas, event) {
@@ -117,14 +118,17 @@ function drawScore(score) {
 function drawReplayButton() {
   ctx.font = "30px Verdana";
 
-  ctx.fillStyle = ELEMENTS.button_replay.color;
-  ctx.fillRect(
+  rc.rectangle(
     ELEMENTS.button_replay.x,
     ELEMENTS.button_replay.y,
     ELEMENTS.button_replay.width,
-    ELEMENTS.button_replay.height
+    ELEMENTS.button_replay.height,
+    {
+      fill: ELEMENTS.button_replay.color,
+      fillWeight: 3
+    },
   );
-  ctx.fillStyle = 'rgb(250, 250, 235)';
+  ctx.fillStyle = 'rgb(32, 32, 32)';
   ctx.fillText(
     ELEMENTS.button_replay.text,
     ELEMENTS.button_replay.x,
@@ -134,16 +138,19 @@ function drawReplayButton() {
 }
 
 function drawDecisionInterface() {
-  ctx.font = "30px Verdana";
+  ctx.font = "20px Verdana";
 
-  ctx.fillStyle = ELEMENTS.button_cooperate.color;
-  ctx.fillRect(
+  rc.rectangle(
     ELEMENTS.button_cooperate.x,
     ELEMENTS.button_cooperate.y,
     ELEMENTS.button_cooperate.width,
-    ELEMENTS.button_cooperate.height
+    ELEMENTS.button_cooperate.height,
+    {
+      fill: ELEMENTS.button_cooperate.color,
+      fillWeight: 3
+    },
   );
-  ctx.fillStyle = 'rgb(250, 250, 235)';
+  ctx.fillStyle = 'rgb(32, 32, 32)';
   ctx.fillText(
     ELEMENTS.button_cooperate.text,
     ELEMENTS.button_cooperate.x,
@@ -152,14 +159,17 @@ function drawDecisionInterface() {
   ctx.strokeRect(2, 2, 2, 2);
   canvas.addEventListener('click', ELEMENTS.button_cooperate.onClick);
 
-  ctx.fillStyle = ELEMENTS.button_cheat.color;
-  ctx.fillRect(
+  rc.rectangle(
     ELEMENTS.button_cheat.x,
     ELEMENTS.button_cheat.y,
     ELEMENTS.button_cheat.width,
-    ELEMENTS.button_cheat.height
+    ELEMENTS.button_cheat.height,
+    {
+      fill: ELEMENTS.button_cheat.color,
+      fillWeight: 3
+    },
   );
-  ctx.fillStyle = 'rgb(250, 250, 235)';
+  ctx.fillStyle = 'rgb(32, 32, 32)';
   ctx.fillText(
     ELEMENTS.button_cheat.text,
     ELEMENTS.button_cheat.x,

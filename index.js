@@ -12,6 +12,7 @@ var io = socketIO(server);
 
 app.set('port', 5000);
 app.use('/static', express.static(__dirname + '/src/client'));
+app.use('/lib', express.static(__dirname + '/node_modules/roughjs/bundled'));
 
 // Routing
 app.get('/', function(request, response) {

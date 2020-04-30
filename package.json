@@ -24,6 +24,7 @@
   "homepage": "https://github.com/bearbob/cheat-cooperate#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "roughjs": "^4.2.3",
     "socket.io": "^2.3.0"
   }
 }
