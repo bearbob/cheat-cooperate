@@ -6,9 +6,12 @@ const ELEMENTS = {
     height: 40,
     text: 'COOP',
     color: 'rgb(0,155,214)',
-    onClick: () => {
-      console.log("Cooperating");
-      socket.emit('cooperate', true);
+    onClick: (event) => {
+      var mousePos = getMousePos(canvas, event);
+      if (isInside(mousePos, ELEMENTS.button_cooperate)) {
+        console.log("Cooperating");
+        socket.emit('cooperate', true);
+      }
     },
   },
 
@@ -19,9 +22,12 @@ const ELEMENTS = {
     height: 40,
     text: 'CHEAT',
     color: 'rgb(255,47,24)',
-    onClick: () => {
-      console.log("Cheating");
-      socket.emit('cooperate', false);
+    onClick: (event) => {
+      var mousePos = getMousePos(canvas, event);
+      if (isInside(mousePos, ELEMENTS.button_cheat)) {
+        console.log("Cheating");
+        socket.emit('cooperate', false);
+      }
     },
   },
 
@@ -32,9 +38,12 @@ const ELEMENTS = {
     height: 40,
     text: 'READY',
     color: 'rgb(134,214,144)',
-    onClick: () => {
-      console.log("Replaying");
-      socket.emit('replay', true);
+    onClick: (event) => {
+      var mousePos = getMousePos(canvas, event);
+      if (isInside(mousePos, ELEMENTS.button_replay)) {
+        console.log("Replaying");
+        socket.emit('replay', true);
+      }
     },
   },
 };
@@ -73,8 +82,15 @@ function setupCanvas() {
   canvas.setAttribute('width', style_width * dpi);
 }
 
-function drawTextScreen(message) {
+function clearScreen() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  //remove all event listeners of the canvas
+  canvas.removeEventListener('click', ELEMENTS.button_cooperate.onClick);
+  canvas.removeEventListener('click', ELEMENTS.button_cheat.onClick);
+  canvas.removeEventListener('click', ELEMENTS.button_replay.onClick);
+}
+
+function drawTextScreen(message) {
   const textHeight = 30;
   ctx.font = textHeight+"px Verdana";
 
@@ -115,23 +131,10 @@ function drawReplayButton() {
     ELEMENTS.button_replay.x,
     ELEMENTS.button_replay.y + ELEMENTS.button_replay.height - 10,
   );
-}
-
-function drawErrorScreen(message) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const textHeight = 30;
-  ctx.font = textHeight+"px Verdana";
-
-  ctx.fillStyle = 'rgb(0, 0, 0)';
-  ctx.fillText(
-    message,
-    15,
-    textHeight+15
-  );
+  canvas.addEventListener('click', ELEMENTS.button_replay.onClick);
 }
 
 function drawDecisionInterface() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.font = "30px Verdana";
 
   ctx.fillStyle = ELEMENTS.button_cooperate.color;
@@ -147,6 +150,7 @@ function drawDecisionInterface() {
     ELEMENTS.button_cooperate.x,
     ELEMENTS.button_cooperate.y + ELEMENTS.button_cooperate.height - 10,
   );
+  canvas.addEventListener('click', ELEMENTS.button_cooperate.onClick);
 
   ctx.fillStyle = ELEMENTS.button_cheat.color;
   ctx.fillRect(
@@ -161,21 +165,5 @@ function drawDecisionInterface() {
     ELEMENTS.button_cheat.x,
     ELEMENTS.button_cheat.y + ELEMENTS.button_cheat.height - 10,
   );
-
-  //Binding the click event on the canvas
-  canvas.addEventListener('click', function(evt) {
-      var mousePos = getMousePos(canvas, evt);
-
-      if (isInside(mousePos, ELEMENTS.button_cooperate)) {
-          ELEMENTS.button_cooperate.onClick();
-      }
-
-      if (isInside(mousePos, ELEMENTS.button_cheat)) {
-          ELEMENTS.button_cheat.onClick();
-      }
-
-      if (isInside(mousePos, ELEMENTS.button_replay)) {
-          ELEMENTS.button_replay.onClick();
-      }
-  }, false);
+  canvas.addEventListener('click', ELEMENTS.button_cheat.onClick);
 }
