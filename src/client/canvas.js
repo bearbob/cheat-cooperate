@@ -60,15 +60,14 @@ function setupCanvas() {
   canvas.setAttribute('width', style_width * dpi);
 }
 
-function drawWaitScreen() {
+function drawTextScreen(message) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const textHeight = 30;
   ctx.font = textHeight+"px Verdana";
 
   ctx.fillStyle = 'rgb(0, 0, 0)';
-  var txt = 'Waiting for the other player to decide...';
   ctx.fillText(
-    txt,
+    message,
     15,
     textHeight+15
   );

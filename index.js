@@ -4,12 +4,14 @@ var http = require('http');
 var path = require('path');
 var socketIO = require('socket.io');
 
+var constants = require('./src/server/constants');
+
 var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
 app.set('port', 5000);
-app.use('/static', express.static(__dirname + '/src/static'));
+app.use('/static', express.static(__dirname + '/src/client'));
 
 // Routing
 app.get('/', function(request, response) {
@@ -27,30 +29,58 @@ var players = {};
 // Add the WebSocket handlers
 io.on('connection', (socket) => {
   console.log('A user connected');
+
   socket.on('disconnect', () => {
-    console.log('user disconnected');
+    console.log('A user disconnected');
     delete players[socket.id];
   });
+
   socket.on('new player', function() {
-    players[socket.id] = {
-      score: 0,
-      state: 'decision',
-      cooperate: null
-    };
+    //a new player wants to join. Check if this is possible
     let playerCount = Object.keys(players).length;
-    console.log('Added new player to the game. Players: '+playerCount);
-  });
-  socket.on('cooperate', function(cooperates) {
-    //decline the action of not enought players are present to play the Game//TODO
-    let playerCount = Object.keys(players).length;
-    if(playerCount < 2) {
-      console.log('Not enough players: '+playerCount);
-      socket.emit('error', { message: 'Not enough players in the game.'});
+    if(playerCount >= 2) {
+      console.log('Cannot add new player, maximum players already reached.');
+      socket.emit('state', constants.state.maxPlayersReached);
+      return;
     }
     players[socket.id] = {
       score: 0,
-      cooperate: cooperates
+      state: constants.state.waitingForPlayers,
+      cooperate: null
     };
+    socket.emit('state', players[socket.id].state);
+
+    playerIds = Object.keys(players);
+    console.log('Added new player to the game. Players: '+playerIds.length);
+    if(playerIds.length == 2) {
+      playerIds.forEach(socketId => {
+        players[socketId].state = constants.state.decision;
+        io.to(socketId).emit('state', players[socketId].state);
+      });
+    }
+  });
+
+  socket.on('cooperate', function(cooperates) {
+    players[socket.id].cooperate = cooperates;
+    players[socket.id].state = constants.state.waitingForOpponent;
+    playerIds = Object.keys(players);
+
+    let waitingPlayers = 0;
+    playerIds.forEach(socketId => {
+      if (players[socketId].state == constants.state.waitingForOpponent) {
+        waitingPlayers++;
+      }
+    });
+    if(waitingPlayers == playerIds.length) {
+      playerIds.forEach(socketId => {
+        players[socketId].state = constants.state.result;
+        io.to(socketId).emit('state', players[socketId].state);
+        //TODO send result of game
+      });
+    } else {
+      socket.emit('state', players[socket.id].state);
+    }
+
     console.log('Cooperate: '+cooperates);
   });
 });
