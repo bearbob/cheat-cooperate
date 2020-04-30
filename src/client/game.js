@@ -19,9 +19,13 @@ setInterval(function() {
         drawTextScreen('Waiting for the other player to decide...');
         break;
       case STATE.result:
-        drawTextScreen('Game has ended');
+        drawTextScreen('Game has ended.');
         break;
     }
+  });
+
+  socket.on('result', function(result) {
+    console.log('Received result: '+result);
   });
 }, 1000);
 

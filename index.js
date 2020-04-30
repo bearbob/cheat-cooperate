@@ -66,15 +66,20 @@ io.on('connection', (socket) => {
     playerIds = Object.keys(players);
 
     let waitingPlayers = 0;
+    let allCooperate = true;
     playerIds.forEach(socketId => {
       if (players[socketId].state == constants.state.waitingForOpponent) {
         waitingPlayers++;
+        if(!players[socketId].cooperate) {
+          allCooperate = false;
+        }
       }
     });
     if(waitingPlayers == playerIds.length) {
       playerIds.forEach(socketId => {
         players[socketId].state = constants.state.result;
         io.to(socketId).emit('state', players[socketId].state);
+        io.to(socketId).emit('result', allCooperate);
         //TODO send result of game
       });
     } else {
@@ -84,17 +89,3 @@ io.on('connection', (socket) => {
     console.log('Cooperate: '+cooperates);
   });
 });
-
-setInterval(function() {
-  //check if all players have given a decision
-  let allCooperate = true;
-  for (let p in players) {
-    if(players[p].cooperate !== true && players[p].cooperate !== false) {
-      return; //do nothing
-    }
-    if(!players[p].cooperate) {
-      allCooperate = false;
-    }
-  }
-  io.sockets.emit('decision', allCooperate);
-}, 100);
