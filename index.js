@@ -46,21 +46,26 @@ io.on('connection', (socket) => {
     players[socket.id] = {
       score: 0,
       state: constants.state.waitingForPlayers,
-      cooperate: null
+      cooperate: null,
+      result: null,
     };
-    socket.emit('state', players[socket.id].state);
+    socket.emit('state', players[socket.id]);
 
     playerIds = Object.keys(players);
     console.log('Added new player to the game. Players: '+playerIds.length);
     if(playerIds.length == 2) {
       playerIds.forEach(socketId => {
         players[socketId].state = constants.state.decision;
-        io.to(socketId).emit('state', players[socketId].state);
+        io.to(socketId).emit('state', players[socketId]);
       });
     }
   });
 
   socket.on('cooperate', function(cooperates) {
+    if(players[socket.id].cooperate != null && players[socket.id].state != constants.state.decide) {
+      console.log('Player already voted.');
+      return;
+    }
     players[socket.id].cooperate = cooperates;
     players[socket.id].state = constants.state.waitingForOpponent;
     playerIds = Object.keys(players);
@@ -78,14 +83,11 @@ io.on('connection', (socket) => {
     if(waitingPlayers == playerIds.length) {
       playerIds.forEach(socketId => {
         players[socketId].state = constants.state.result;
-        io.to(socketId).emit('state', players[socketId].state);
-        io.to(socketId).emit('result', allCooperate);
-        //TODO send result of game
+        players[socketId].result = allCooperate;
+        io.to(socketId).emit('state', players[socketId]);
       });
     } else {
-      socket.emit('state', players[socket.id].state);
+      socket.emit('state', players[socket.id]);
     }
-
-    console.log('Cooperate: '+cooperates);
   });
 });
