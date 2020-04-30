@@ -9,12 +9,16 @@ socket.on('state', function(playerObject) {
       break;
     case STATE.decision:
       drawDecisionInterface();
+      drawScore(playerObject.score);
       break;
     case STATE.waitingForOpponent:
       drawTextScreen('Waiting for the other player to decide...');
+      drawScore(playerObject.score);
       break;
     case STATE.result:
       drawTextScreen('Game has ended. Result: '+playerObject.result);
+      drawScore(playerObject.score);
+      drawReplayButton();
       break;
   }
 });
@@ -22,4 +26,4 @@ socket.on('state', function(playerObject) {
 var currentState = STATE.decision;
 
 setupCanvas();
-drawDecisionInterface();
+drawTextScreen('Not enough players');

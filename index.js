@@ -71,23 +71,45 @@ io.on('connection', (socket) => {
     playerIds = Object.keys(players);
 
     let waitingPlayers = 0;
-    let allCooperate = true;
+    let cheaters = 0;
     playerIds.forEach(socketId => {
       if (players[socketId].state == constants.state.waitingForOpponent) {
         waitingPlayers++;
         if(!players[socketId].cooperate) {
-          allCooperate = false;
+          cheaters++;
         }
       }
     });
     if(waitingPlayers == playerIds.length) {
       playerIds.forEach(socketId => {
         players[socketId].state = constants.state.result;
-        players[socketId].result = allCooperate;
+        players[socketId].result = cheaters;
+        //TODO add or subtract points
+        if(cheaters == 0) {
+          players[socketId].score += 2;
+        } else if(cheaters != playerIds.length) {
+          if(players[socketId].cooperate) {
+            players[socketId].score -= 1;
+          } else {
+            players[socketId].score += 3;
+          }
+
+        }
         io.to(socketId).emit('state', players[socketId]);
       });
     } else {
       socket.emit('state', players[socket.id]);
     }
+  });
+
+  socket.on('replay', function(cooperates) {
+    if(players[socket.id].state != constants.state.result) {
+      console.log('Player cannot replay right now');
+      return;
+    }
+    players[socket.id].cooperate = null;
+    players[socket.id].state = constants.state.decision;
+    socket.emit('state', players[socket.id]);
+
   });
 });

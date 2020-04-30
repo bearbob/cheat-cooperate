@@ -24,6 +24,19 @@ const ELEMENTS = {
       socket.emit('cooperate', false);
     },
   },
+
+  button_replay: {
+    x: 120,
+    y: 210,
+    width: 100,
+    height: 40,
+    text: 'READY',
+    color: 'rgb(134,214,144)',
+    onClick: () => {
+      console.log("Replaying");
+      socket.emit('replay', true);
+    },
+  },
 };
 
 var canvas = document.getElementById('interface_canvas');
@@ -70,6 +83,37 @@ function drawTextScreen(message) {
     message,
     15,
     textHeight+15
+  );
+}
+
+function drawScore(score) {
+  const textHeight = 30;
+  ctx.font = textHeight+"px Verdana";
+
+  ctx.fillStyle = 'rgb(0, 0, 0)';
+  ctx.fillText(
+    'Score: '+score,
+    15,
+    2*textHeight+30
+  );
+}
+
+function drawReplayButton() {
+  const textHeight = 30;
+  ctx.font = textHeight+"px Verdana";
+
+  ctx.fillStyle = ELEMENTS.button_replay.color;
+  ctx.fillRect(
+    ELEMENTS.button_replay.x,
+    ELEMENTS.button_replay.y,
+    ELEMENTS.button_replay.width,
+    ELEMENTS.button_replay.height
+  );
+  ctx.fillStyle = 'rgb(250, 250, 235)';
+  ctx.fillText(
+    ELEMENTS.button_replay.text,
+    ELEMENTS.button_replay.x,
+    ELEMENTS.button_replay.y + ELEMENTS.button_replay.height - 10,
   );
 }
 
@@ -128,6 +172,10 @@ function drawDecisionInterface() {
 
       if (isInside(mousePos, ELEMENTS.button_cheat)) {
           ELEMENTS.button_cheat.onClick();
+      }
+
+      if (isInside(mousePos, ELEMENTS.button_replay)) {
+          ELEMENTS.button_replay.onClick();
       }
   }, false);
 }
