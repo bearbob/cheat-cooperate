@@ -48,6 +48,8 @@ const ELEMENTS = {
   },
 };
 
+const TEXTSIZE = 16;
+
 var canvas = document.getElementById('interface_canvas');
 var ctx = canvas.getContext('2d');
 
@@ -91,32 +93,29 @@ function clearScreen() {
 }
 
 function drawTextScreen(message) {
-  const textHeight = 30;
-  ctx.font = textHeight+"px Verdana";
+  ctx.font = TEXTSIZE+"px Verdana";
 
   ctx.fillStyle = 'rgb(0, 0, 0)';
   ctx.fillText(
     message,
     15,
-    textHeight+15
+    TEXTSIZE+15
   );
 }
 
 function drawScore(score) {
-  const textHeight = 30;
-  ctx.font = textHeight+"px Verdana";
+  ctx.font = TEXTSIZE+"px Verdana";
 
   ctx.fillStyle = 'rgb(0, 0, 0)';
   ctx.fillText(
     'Score: '+score,
     15,
-    2*textHeight+30
+    2*TEXTSIZE+30
   );
 }
 
 function drawReplayButton() {
-  const textHeight = 30;
-  ctx.font = textHeight+"px Verdana";
+  ctx.font = "30px Verdana";
 
   ctx.fillStyle = ELEMENTS.button_replay.color;
   ctx.fillRect(
@@ -150,6 +149,7 @@ function drawDecisionInterface() {
     ELEMENTS.button_cooperate.x,
     ELEMENTS.button_cooperate.y + ELEMENTS.button_cooperate.height - 10,
   );
+  ctx.strokeRect(2, 2, 2, 2);
   canvas.addEventListener('click', ELEMENTS.button_cooperate.onClick);
 
   ctx.fillStyle = ELEMENTS.button_cheat.color;
