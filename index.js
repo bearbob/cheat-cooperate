@@ -23,9 +23,48 @@ server.listen(5000, function() {
 
 //------------------------------------------------------------------
 
+var players = {};
 // Add the WebSocket handlers
-io.on('connection', function(socket) {
-  socket.on('cooperate', function(data) {
-    console.log('Cooperate: '+data);
+io.on('connection', (socket) => {
+  console.log('A user connected');
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+    delete players[socket.id];
+  });
+  socket.on('new player', function() {
+    players[socket.id] = {
+      score: 0,
+      state: 'decision',
+      cooperate: null
+    };
+    let playerCount = Object.keys(players).length;
+    console.log('Added new player to the game. Players: '+playerCount);
+  });
+  socket.on('cooperate', function(cooperates) {
+    //decline the action of not enought players are present to play the Game//TODO
+    let playerCount = Object.keys(players).length;
+    if(playerCount < 2) {
+      console.log('Not enough players: '+playerCount);
+      socket.emit('error', { message: 'Not enough players in the game.'});
+    }
+    players[socket.id] = {
+      score: 0,
+      cooperate: cooperates
+    };
+    console.log('Cooperate: '+cooperates);
   });
 });
+
+setInterval(function() {
+  //check if all players have given a decision
+  let allCooperate = true;
+  for (let p in players) {
+    if(players[p].cooperate !== true && players[p].cooperate !== false) {
+      return; //do nothing
+    }
+    if(!players[p].cooperate) {
+      allCooperate = false;
+    }
+  }
+  io.sockets.emit('decision', allCooperate);
+}, 100);
