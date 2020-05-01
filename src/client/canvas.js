@@ -94,7 +94,7 @@ function clearScreen() {
 }
 
 function drawTextScreen(message) {
-  ctx.font = TEXTSIZE+"px Verdana";
+  ctx.font = TEXTSIZE+"px FuturaHandwritten";
 
   ctx.fillStyle = 'rgb(0, 0, 0)';
   ctx.fillText(
@@ -105,7 +105,7 @@ function drawTextScreen(message) {
 }
 
 function drawScore(score) {
-  ctx.font = TEXTSIZE+"px Verdana";
+  ctx.font = TEXTSIZE+"px FuturaHandwritten";
 
   ctx.fillStyle = 'rgb(0, 0, 0)';
   ctx.fillText(
@@ -116,7 +116,7 @@ function drawScore(score) {
 }
 
 function drawReplayButton() {
-  ctx.font = "30px Verdana";
+  ctx.font = "30px FuturaHandwritten";
 
   rc.rectangle(
     ELEMENTS.button_replay.x,
@@ -138,7 +138,7 @@ function drawReplayButton() {
 }
 
 function drawDecisionInterface() {
-  ctx.font = "20px Verdana";
+  ctx.font = "20px FuturaHandwritten";
 
   rc.rectangle(
     ELEMENTS.button_cooperate.x,
