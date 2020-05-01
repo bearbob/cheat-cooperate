@@ -10,7 +10,7 @@ const ELEMENTS = {
       var mousePos = getMousePos(canvas, event);
       if (isInside(mousePos, ELEMENTS.button_cooperate)) {
         console.log("Cooperating");
-        socket.emit('cooperate', true);
+        socket.to(roomId).emit('cooperate', true);
       }
     },
   },
@@ -26,7 +26,7 @@ const ELEMENTS = {
       var mousePos = getMousePos(canvas, event);
       if (isInside(mousePos, ELEMENTS.button_cheat)) {
         console.log("Cheating");
-        socket.emit('cooperate', false);
+        socket.to(roomId).emit('cooperate', false);
       }
     },
   },
@@ -42,7 +42,7 @@ const ELEMENTS = {
       var mousePos = getMousePos(canvas, event);
       if (isInside(mousePos, ELEMENTS.button_replay)) {
         console.log("Replaying");
-        socket.emit('replay', true);
+        socket.to(roomId).emit('replay', true);
       }
     },
   },

@@ -16,7 +16,7 @@ canvas {
 
 #action_menu {
   position: fixed; /* Sit on top of the page content */
-  display: none; /* Hidden by default */
+  display: inherit; /* Hidden by default */
   width: 100%; /* Full width (cover the whole page) */
   height: 100%; /* Full height (cover the whole page) */
   top: 0;
@@ -61,4 +61,8 @@ canvas {
 .button:hover {
   cursor: pointer;
   background: rgb(0,200,255);
+}
+
+#selection_error {
+  color: red;
 }

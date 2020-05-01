@@ -16,8 +16,8 @@
   </head>
   <body>
     <div id="game_screen">
-      <div id="game_id">Game_ID</div>
-      <div id="score">Score</div>
+      <div id="game_id">Game_ID: none</div>
+      <div id="score">Score: 0</div>
       <canvas id="interface_canvas"></canvas>
     </div>
 
@@ -28,9 +28,10 @@
           <input type="text" id="serverid_input" class="input" name="serverid">
         </center>
         <div id="button_row">
-          <div id="server_create" class="button">Create</div>
-          <div id="server_Join" class="button">Join</div>
+          <div id="server_create" class="button" onclick="createServer()">Create</div>
+          <div id="server_Join" class="button" onclick="joinServer()">Join</div>
         </div>
+        <div id="selection_error"></div>
       </div>
     </div>
   </body>

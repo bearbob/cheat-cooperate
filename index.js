@@ -33,19 +33,31 @@ var players = {};
 io.on('connection', (socket) => {
   console.log('A user connected');
 
+  socket.on('create', (roomId) => {
+    let createdServerSuccessfully = communication.createServer(socket, roomId);
+    if(createdServerSuccessfully) {
+      communication.playerJoined(io, socket, roomId);
+    }
+  });
+
+  socket.on('join', (roomId) => {
+    let joined = communication.playerJoined(io, socket, roomId);
+    if(joined) {
+      socket.emit('joined_game', {id: roomId});
+    } else {
+      socket.emit('join_error', 'Game with given ID does not exist.');
+    }
+  });
+
   socket.on('disconnect', () => {
     communication.playerDisconnected(socket);
   });
 
-  socket.on('new player', () => {
-    communication.playerJoined(io, socket);
-  });
-
   socket.on('cooperate', (cooperates) => {
-    communication.sendDecision(io, socket, cooperates);
+    communication.sendDecision(io, socket, roomId, cooperates);
   });
 
   socket.on('replay', () => {
-    communication.replay(io, socket);
+    communication.replay(io, socket, roomId);
   });
 });
