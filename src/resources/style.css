@@ -1,0 +1,64 @@
+body {
+  font-family: 'FuturaHandwritten';
+}
+
+canvas {
+  width: 800px;
+  height: 600px;
+  border: 0px solid black;
+}
+
+#game_screen {
+  margin: auto;
+  width: 50%;
+  min-width: 800px;
+}
+
+#action_menu {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.8); /* Black background with opacity */
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  padding-top: 5%;
+}
+
+#server_dialog {
+  margin: auto;
+  width: 20%;
+  max-width: 300px;
+  padding: 10px;
+  background: #ffffff;
+  border: 2px solid black;
+  border-radius: 15px;
+}
+
+.input {
+  border: 2px solid black;
+  background: rgb(195,195,195);
+  width: 60%;
+}
+
+#button_row {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 15px;
+}
+
+.button {
+  border: 2px solid black;
+  background: rgb(0,155,214);
+  display: table-cell;
+  text-align: center;
+}
+
+.button:hover {
+  cursor: pointer;
+  background: rgb(0,200,255);
+}

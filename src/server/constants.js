@@ -1,4 +1,5 @@
 const STATE = {
+  startScreen: 'startScreen',
   waitingForPlayers: 'waitingForPlayers',
   decision: 'decision',
   waitingForOpponent: 'waitingForOpponent',

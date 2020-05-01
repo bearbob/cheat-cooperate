@@ -1,22 +1,38 @@
 <html>
   <head>
     <title>A Game Of Trust</title>
+    <meta content="utf-8" http-equiv="encoding">
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta charset="utf-8">
+    <link rel="icon" type="image/png" href="res/favicon.png">
     <style>
       @font-face{
         font-family: 'FuturaHandwritten';
         font-style: normal;
         src: url('res/FuturaHandwritten.ttf') format('truetype');
       }
-
-      canvas {
-        width: 800px;
-        height: 600px;
-        border: 1px solid black;
-      }
     </style>
+    <link rel="stylesheet" href="res/style.css">
   </head>
   <body>
-    <canvas id="interface_canvas"></canvas>
+    <div id="game_screen">
+      <div id="game_id">Game_ID</div>
+      <div id="score">Score</div>
+      <canvas id="interface_canvas"></canvas>
+    </div>
+
+    <div id="action_menu">
+      <div id="server_dialog">
+        Please create a new game or join an existing one.
+        <center>
+          <input type="text" id="serverid_input" class="input" name="serverid">
+        </center>
+        <div id="button_row">
+          <div id="server_create" class="button">Create</div>
+          <div id="server_Join" class="button">Join</div>
+        </div>
+      </div>
+    </div>
   </body>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/lib/rough.js"></script>

@@ -5,6 +5,7 @@ var path = require('path');
 var socketIO = require('socket.io');
 
 var constants = require('./src/server/constants');
+var communication = require('./src/server/communication');
 
 var app = express();
 var server = http.Server(app);
@@ -33,85 +34,18 @@ io.on('connection', (socket) => {
   console.log('A user connected');
 
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
-    delete players[socket.id];
+    communication.playerDisconnected(socket);
   });
 
-  socket.on('new player', function() {
-    //a new player wants to join. Check if this is possible
-    let playerCount = Object.keys(players).length;
-    if(playerCount >= 2) {
-      console.log('Cannot add new player, maximum players already reached.');
-      socket.emit('state', constants.state.maxPlayersReached);
-      return;
-    }
-    players[socket.id] = {
-      score: 0,
-      state: constants.state.waitingForPlayers,
-      cooperate: null,
-      result: null,
-    };
-    socket.emit('state', players[socket.id]);
-
-    playerIds = Object.keys(players);
-    console.log('Added new player to the game. Players: '+playerIds.length);
-    if(playerIds.length == 2) {
-      playerIds.forEach(socketId => {
-        players[socketId].state = constants.state.decision;
-        io.to(socketId).emit('state', players[socketId]);
-      });
-    }
+  socket.on('new player', () => {
+    communication.playerJoined(io, socket);
   });
 
-  socket.on('cooperate', function(cooperates) {
-    if(players[socket.id].cooperate != null && players[socket.id].state != constants.state.decide) {
-      console.log('Player already voted.');
-      return;
-    }
-    players[socket.id].cooperate = cooperates;
-    players[socket.id].state = constants.state.waitingForOpponent;
-    playerIds = Object.keys(players);
-
-    let waitingPlayers = 0;
-    let cheaters = 0;
-    playerIds.forEach(socketId => {
-      if (players[socketId].state == constants.state.waitingForOpponent) {
-        waitingPlayers++;
-        if(!players[socketId].cooperate) {
-          cheaters++;
-        }
-      }
-    });
-    if(waitingPlayers == playerIds.length) {
-      playerIds.forEach(socketId => {
-        players[socketId].state = constants.state.result;
-        players[socketId].result = cheaters;
-        //TODO add or subtract points
-        if(cheaters == 0) {
-          players[socketId].score += 2;
-        } else if(cheaters != playerIds.length) {
-          if(players[socketId].cooperate) {
-            players[socketId].score -= 1;
-          } else {
-            players[socketId].score += 3;
-          }
-
-        }
-        io.to(socketId).emit('state', players[socketId]);
-      });
-    } else {
-      socket.emit('state', players[socket.id]);
-    }
+  socket.on('cooperate', (cooperates) => {
+    communication.sendDecision(io, socket, cooperates);
   });
 
-  socket.on('replay', function(cooperates) {
-    if(players[socket.id].state != constants.state.result) {
-      console.log('Player cannot replay right now');
-      return;
-    }
-    players[socket.id].cooperate = null;
-    players[socket.id].state = constants.state.decision;
-    socket.emit('state', players[socket.id]);
-
+  socket.on('replay', () => {
+    communication.replay(io, socket);
   });
 });
