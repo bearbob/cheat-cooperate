@@ -22,6 +22,10 @@ function joinServer() {
   socket.emit('join', id);
 }
 
+function setScore(score) {
+  document.getElementById('score').innerHTML='Score: '+score;
+}
+
 socket.on('joined_game', (room) => {
   roomId = room.id;
   document.getElementById('action_menu').style.display='none';
@@ -35,6 +39,7 @@ socket.on('join_error', (message) => {
 
 socket.on('state', function(playerObject) {
   console.log('Received state: '+playerObject.state);
+  setScore(playerObject.score);
   switch(playerObject.state) {
     case STATE.waitingForPlayers:
       clearScreen();
@@ -43,17 +48,14 @@ socket.on('state', function(playerObject) {
     case STATE.decision:
       clearScreen();
       drawDecisionInterface();
-      drawScore(playerObject.score);
       break;
     case STATE.waitingForOpponent:
       clearScreen();
       drawTextScreen('Waiting for the other player to decide...');
-      drawScore(playerObject.score);
       break;
     case STATE.result:
       clearScreen();
       drawTextScreen('Game has ended. Result: '+playerObject.result);
-      drawScore(playerObject.score);
       drawReplayButton();
       break;
   }

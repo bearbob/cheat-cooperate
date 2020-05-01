@@ -13,7 +13,7 @@ module.exports = {
     }
   },
 
-  playerDisconnected: (socket, roomId) => {
+  playerDisconnected: (socket) => {
     game.removePlayer(socket.id);
   },
 
