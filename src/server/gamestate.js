@@ -1,9 +1,15 @@
 var constants = require('./constants');
 
-//TODO: Game object for game rooms and state of the room to respond to a player that a game has already started and cannot be joined
-
 var rooms = {};
 var players = {};
+
+/**
+ * @private
+ * @return {string}
+ */
+const getPlayerName = () => {
+  return constants.names[Math.floor(Math.random() * constants.names.length)];
+};
 
 const createRoom = (roomId) => {
   if(rooms[roomId]) {
@@ -36,8 +42,10 @@ const addPlayer = (roomId, playerId) => {
     return false;
   }
   rooms[roomId].players[playerId] = {
+    name: getPlayerName(),
     score: 0,
     state: constants.state.waitingForPlayers,
+    voteToStart: false,
     cooperate: null,
     result: null,
   };
@@ -70,6 +78,30 @@ const countPlayers = (roomId) => {
 const getPlayerIDs = (roomId) => {
   return Object.keys(rooms[roomId].players);
 };
+
+/**
+ *
+ * @return {integer} 0, if the vote triggered
+ */
+const voteToStart = (roomId, playerId) => {
+  let player = rooms[roomId].players;
+  if(countPlayers(roomId)%2 == 0) {
+    console.log('Player '+playerId+' tried to start the game, but the player count is uneven.');
+    return 2;
+  }
+  players[playerId].voteToStart = true;
+  let votes = 0;
+  for(let pid in players) {
+    votes += players[pid].voteToStart?1:0;
+  }
+  console.log('Got '+votes+' votes to start the game in room '+roomId);
+  if(votes == countPlayers(roomId)) {
+    return 0;
+  }
+  return 1;
+};
+
+
 
 module.exports = {
   createRoom: createRoom,

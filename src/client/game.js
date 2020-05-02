@@ -37,6 +37,21 @@ socket.on('join_error', (message) => {
   document.getElementById('selection_error').innerHTML=message;
 });
 
+socket.on('playercount', (count) => {
+  console.log('Players in the room: '+count);
+  document.getElementById('playercount').innerHTML='Players: '+count;
+});
+
+socket.on('playercount', (count) => {
+  console.log('Players in the room: '+count);
+  document.getElementById('playercount').innerHTML='Players: '+count;
+});
+
+socket.on('add_log', (message) => {
+  console.log('Received log message: '+message);
+  document.getElementById('game_log').innerHTML+=message+'<br/>';
+});
+
 socket.on('state', function(playerObject) {
   console.log('Received state: '+playerObject.state);
   setScore(playerObject.score);

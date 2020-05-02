@@ -25,9 +25,14 @@ module.exports = {
       return false;
     }
     game.addPlayer(roomId, socket.id);
+    socket.join(roomId);
     socket.emit('state', game.getPlayer(roomId, socket.id));
 
     console.log('Added new player to the game. Players: '+game.countPlayers(roomId));
+    //update the playercount for all players in the room
+    io.to(roomId).emit('playercount', game.countPlayers(roomId));
+    io.to(roomId).emit('add_log', '<b>'+game.getPlayer(roomId, socket.id).name+'</b> joined the room.');
+
     if(game.countPlayers(roomId) == 2) {
       let playerIds = game.getPlayerIDs(roomId);
       playerIds.forEach(socketId => {
@@ -90,6 +95,20 @@ module.exports = {
     player.cooperate = null;
     player.state = constants.state.decision;
     socket.emit('state', player);
+  },
 
-  }
+  sendStartVote: (io, socket, roomId) => {
+    let voteResult = game.voteToStart(roomId, socket.id);
+    switch(voteResult) {
+      case 0:
+        io.to(roomId).emit('gameIsStarting');
+        break;
+      case 1:
+        socket.emit('voteResult', 'Waiting for other players to vote');
+        break;
+      case 2:
+        socket.emit('voteResult', 'Cannot start with uneven player count');
+        break;
+    }
+  },
 };
