@@ -26,20 +26,20 @@ module.exports = {
     }
     game.addPlayer(roomId, socket.id);
     socket.join(roomId);
-    socket.emit('state', game.getPlayer(roomId, socket.id));
+    socket.emit('state', game.getPlayer(socket.id));
 
     console.log('Added new player to the game. Players: '+game.countPlayers(roomId));
     //update the playercount for all players in the room
     io.to(roomId).emit('playercount', game.countPlayers(roomId));
-    io.to(roomId).emit('add_log', '<b>'+game.getPlayer(roomId, socket.id).name+'</b> joined the room.');
+    io.to(roomId).emit('add_log', '<b>'+game.getPlayer(socket.id).name+'</b> joined the room.');
 
     /*
     //this was used for the two-player variant to tell the other player that the game starts
     if(game.countPlayers(roomId) == 2) {
       let playerIds = game.getPlayerIDs(roomId);
       playerIds.forEach(socketId => {
-        game.getPlayer(roomId, socketId).state = constants.state.decision;
-        io.to(socketId).emit('state', game.getPlayer(roomId, socketId));
+        game.getPlayer(socketId).state = constants.state.decision;
+        io.to(socketId).emit('state', game.getPlayer(socketId));
       });
     }
     */
@@ -49,7 +49,7 @@ module.exports = {
 
   sendDecision: (io, socket, bPlayerCooperates) => {
     let roomId = game.getRoomId(socket.id);
-    let player = game.getPlayer(roomId, socket.id);
+    let player = game.getPlayer(socket.id);
     if(player.cooperate != null && player.state != constants.state.decide) {
       console.log('Player already voted.');
       return;
@@ -61,29 +61,29 @@ module.exports = {
     let waitingPlayers = 0;
     let cheaters = 0;
     playerIds.forEach(socketId => {
-      if (game.getPlayer(roomId, socketId).state == constants.state.waitingForOpponent) {
+      if (game.getPlayer(socketId).state == constants.state.waitingForOpponent) {
         waitingPlayers++;
-        if(!game.getPlayer(roomId, socketId).cooperate) {
+        if(!game.getPlayer(socketId).cooperate) {
           cheaters++;
         }
       }
     });
     if(waitingPlayers == playerIds.length) {
       playerIds.forEach(socketId => {
-        game.getPlayer(roomId, socketId).state = constants.state.result;
-        game.getPlayer(roomId, socketId).result = cheaters;
+        game.getPlayer(socketId).state = constants.state.result;
+        game.getPlayer(socketId).result = cheaters;
         //TODO add or subtract points
         if(cheaters == 0) {
-          game.getPlayer(roomId, socketId).score += 2;
+          game.getPlayer(socketId).score += 2;
         } else if(cheaters != playerIds.length) {
-          if(game.getPlayer(roomId, socketId).cooperate) {
-            game.getPlayer(roomId, socketId).score -= 1;
+          if(game.getPlayer(socketId).cooperate) {
+            game.getPlayer(socketId).score -= 1;
           } else {
-            game.getPlayer(roomId, socketId).score += 3;
+            game.getPlayer(socketId).score += 3;
           }
 
         }
-        io.to(socketId).emit('state', game.getPlayer(roomId, socketId));
+        io.to(socketId).emit('state', game.getPlayer(socketId));
       });
     } else {
       socket.emit('state', player);
@@ -92,7 +92,7 @@ module.exports = {
 
   replay: (io, socket) => {
     let roomId = game.getRoomId(socket.id);
-    let player = game.getPlayer(roomId, socket.id);
+    let player = game.getPlayer(socket.id);
     if(player.state != constants.state.result) {
       console.log('Player cannot replay right now');
       return;
@@ -104,16 +104,17 @@ module.exports = {
 
   sendStartVote: (io, socket) => {
     let roomId = game.getRoomId(socket.id);
-    let voteResult = game.voteToStart(roomId, socket.id);
+    let voteResult = game.voteToStart(socket.id);
     switch(voteResult) {
       case 0:
         io.to(roomId).emit('gameIsStarting');
         break;
       case 1:
         socket.emit('voteResult', 'Waiting for other players to vote');
+        io.to(roomId).emit('add_log', '<b>'+game.getPlayer(socket.id).name+'</b> voted to start.');
         break;
       case 2:
-        socket.emit('voteResult', 'Cannot start with uneven player count');
+        socket.emit('add_log', 'Cannot start with uneven player count');
         break;
     }
   },

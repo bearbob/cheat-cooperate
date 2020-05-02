@@ -39,7 +39,8 @@ socket.on('join_error', (message) => {
 
 socket.on('add_log', (message) => {
   console.log('Received log message: '+message);
-  document.getElementById('game_log').innerHTML+=message+'<br/>';
+  let logElement = document.getElementById('game_log');
+  logElement.innerHTML=message+'<br/>'+logElement.innerHTML;
 });
 
 socket.on('playercount', (count) => {

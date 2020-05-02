@@ -17,7 +17,6 @@ const createRoom = (roomId) => {
   }
   rooms[roomId] = {
     isClosed: false,
-    players: {},
   };
   return true;
 };
@@ -41,8 +40,9 @@ const addPlayer = (roomId, playerId) => {
   if(!rooms[roomId] || rooms[roomId].isClosed) {
     return false;
   }
-  rooms[roomId].players[playerId] = {
+  players[playerId] = {
     name: getPlayerName(),
+    room: roomId,
     score: 0,
     state: constants.state.waitingForPlayers,
     voteToStart: false,
@@ -54,48 +54,57 @@ const addPlayer = (roomId, playerId) => {
 
 const removePlayer = (playerId) => {
   console.log('A user disconnected: '+playerId);
-  for (var roomId in rooms) {
-    if(rooms[roomId].players[playerId]) {
-      console.log('Deleting player "'+playerId+'" from room "'+roomId+'"');
-        delete rooms[roomId].players[playerId];
-    }
-    //if the room is empty, delete it
-    if(countPlayers(roomId) < 1) {
-      console.log('Deleting empty room "'+roomId+'"');
-      delete rooms[roomId];
-    }
+  if(!players[playerId]) {
+    return; //already deleted or never existed in this life cycle
+  }
+  let roomId = players[playerId].room;
+  if(players[playerId]) {
+    console.log('Deleting player "'+playerId+'" from room "'+players[playerId].room+'"');
+      delete players[playerId];
+  }
+  if(roomId && countPlayers(roomId) < 1) {
+    console.log('Deleting empty room "'+roomId+'"');
+    delete rooms[roomId];
   }
 };
 
 const getRoomId = (playerId) => {
-  for (var roomId in rooms) {
-    if(rooms[roomId].players[playerId]) {
-      return roomId;
-    }
+  if(players[playerId]) {
+    return players[playerId].room;
   }
   return null;
 };
 
-const getPlayer = (roomId, playerId) => {
-  return rooms[roomId].players[playerId];
+const getPlayer = (playerId) => {
+  return players[playerId];
 };
 
 const countPlayers = (roomId) => {
-  return Object.keys(rooms[roomId].players).length;
+  return getPlayerIDs(roomId).length;
 };
 
 const getPlayerIDs = (roomId) => {
-  return Object.keys(rooms[roomId].players);
+  let playersInRoom = [];
+  for(let p in players) {
+    if(players[p].room == roomId) {
+      playersInRoom.push(p);
+    }
+  }
+  return playersInRoom;
 };
 
 /**
  *
  * @return {integer} 0, if the vote triggered
  */
-const voteToStart = (roomId, playerId) => {
-  let player = rooms[roomId].players;
-  if(countPlayers(roomId)%2 == 0) {
-    console.log('Player '+playerId+' tried to start the game, but the player count is uneven.');
+const voteToStart = (playerId) => {
+  if(!players[playerId]) {
+    console.log('Unknown player tried to vote. The server will not respond.');
+    return;
+  }
+  let roomId = players[playerId].room;
+  if(countPlayers(roomId)%2 != 0) {
+    console.log('Player '+playerId+' tried to start the game, but the player count in '+roomId+' is uneven.');
     return 2;
   }
   players[playerId].voteToStart = true;
