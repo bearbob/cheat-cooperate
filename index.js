@@ -54,10 +54,14 @@ io.on('connection', (socket) => {
   });
 
   socket.on('cooperate', (cooperates) => {
-    communication.sendDecision(io, socket, roomId, cooperates);
+    communication.sendDecision(io, socket, cooperates);
   });
 
   socket.on('replay', () => {
-    communication.replay(io, socket, roomId);
+    communication.replay(io, socket);
+  });
+
+  socket.on('vote', () => {
+    communication.sendStartVote(io, socket);
   });
 });

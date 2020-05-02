@@ -33,6 +33,8 @@ module.exports = {
     io.to(roomId).emit('playercount', game.countPlayers(roomId));
     io.to(roomId).emit('add_log', '<b>'+game.getPlayer(roomId, socket.id).name+'</b> joined the room.');
 
+    /*
+    //this was used for the two-player variant to tell the other player that the game starts
     if(game.countPlayers(roomId) == 2) {
       let playerIds = game.getPlayerIDs(roomId);
       playerIds.forEach(socketId => {
@@ -40,11 +42,13 @@ module.exports = {
         io.to(socketId).emit('state', game.getPlayer(roomId, socketId));
       });
     }
+    */
     return true;
   },
 
 
-  sendDecision: (io, socket, roomId, bPlayerCooperates) => {
+  sendDecision: (io, socket, bPlayerCooperates) => {
+    let roomId = game.getRoomId(socket.id);
     let player = game.getPlayer(roomId, socket.id);
     if(player.cooperate != null && player.state != constants.state.decide) {
       console.log('Player already voted.');
@@ -87,6 +91,7 @@ module.exports = {
   },
 
   replay: (io, socket) => {
+    let roomId = game.getRoomId(socket.id);
     let player = game.getPlayer(roomId, socket.id);
     if(player.state != constants.state.result) {
       console.log('Player cannot replay right now');
@@ -97,7 +102,8 @@ module.exports = {
     socket.emit('state', player);
   },
 
-  sendStartVote: (io, socket, roomId) => {
+  sendStartVote: (io, socket) => {
+    let roomId = game.getRoomId(socket.id);
     let voteResult = game.voteToStart(roomId, socket.id);
     switch(voteResult) {
       case 0:

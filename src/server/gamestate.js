@@ -67,6 +67,15 @@ const removePlayer = (playerId) => {
   }
 };
 
+const getRoomId = (playerId) => {
+  for (var roomId in rooms) {
+    if(rooms[roomId].players[playerId]) {
+      return roomId;
+    }
+  }
+  return null;
+};
+
 const getPlayer = (roomId, playerId) => {
   return rooms[roomId].players[playerId];
 };
@@ -107,9 +116,11 @@ module.exports = {
   createRoom: createRoom,
   closeRoom: closeRoom,
   roomIsOpen: roomIsOpen,
+  getRoomId: getRoomId,
   addPlayer: addPlayer,
   removePlayer: removePlayer,
   getPlayer: getPlayer,
   countPlayers: countPlayers,
   getPlayerIDs: getPlayerIDs,
+  voteToStart: voteToStart,
 };

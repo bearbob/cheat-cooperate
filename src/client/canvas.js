@@ -10,7 +10,7 @@ const ELEMENTS = {
       var mousePos = getMousePos(canvas, event);
       if (isInside(mousePos, ELEMENTS.button_cooperate)) {
         console.log("Cooperating");
-        socket.to(roomId).emit('cooperate', true);
+        socket.emit('cooperate', true);
       }
     },
   },
@@ -26,14 +26,14 @@ const ELEMENTS = {
       var mousePos = getMousePos(canvas, event);
       if (isInside(mousePos, ELEMENTS.button_cheat)) {
         console.log("Cheating");
-        socket.to(roomId).emit('cooperate', false);
+        socket.emit('cooperate', false);
       }
     },
   },
 
   button_replay: {
-    x: 120,
-    y: 210,
+    x: 10,
+    y: 25,
     width: 100,
     height: 40,
     text: 'READY',
@@ -42,7 +42,24 @@ const ELEMENTS = {
       var mousePos = getMousePos(canvas, event);
       if (isInside(mousePos, ELEMENTS.button_replay)) {
         console.log("Replaying");
-        socket.to(roomId).emit('replay', true);
+        socket.emit('replay', true);
+      }
+    },
+  },
+  button_start: {
+    x: 10,
+    y: 25,
+    width: 100,
+    height: 40,
+    text: 'START',
+    color: 'rgb(134,214,144)',
+    onClick: (event) => {
+      var mousePos = getMousePos(canvas, event);
+      if (isInside(mousePos, ELEMENTS.button_start)) {
+        console.log("Voted to start");
+        socket.emit('vote', true);
+        clearScreen();
+        drawTextScreen('Waiting for the other players to start...');
       }
     },
   },
@@ -91,6 +108,7 @@ function clearScreen() {
   canvas.removeEventListener('click', ELEMENTS.button_cooperate.onClick);
   canvas.removeEventListener('click', ELEMENTS.button_cheat.onClick);
   canvas.removeEventListener('click', ELEMENTS.button_replay.onClick);
+  canvas.removeEventListener('click', ELEMENTS.button_start.onClick);
 }
 
 function drawTextScreen(message) {
@@ -104,15 +122,26 @@ function drawTextScreen(message) {
   );
 }
 
-function drawScore(score) {
-  ctx.font = TEXTSIZE+"px FuturaHandwritten";
+function drawVoteButton() {
+  ctx.font = "30px FuturaHandwritten";
 
-  ctx.fillStyle = 'rgb(0, 0, 0)';
-  ctx.fillText(
-    'Score: '+score,
-    15,
-    2*TEXTSIZE+30
+  rc.rectangle(
+    ELEMENTS.button_start.x,
+    ELEMENTS.button_start.y,
+    ELEMENTS.button_start.width,
+    ELEMENTS.button_start.height,
+    {
+      fill: ELEMENTS.button_start.color,
+      fillWeight: 3
+    },
   );
+  ctx.fillStyle = 'rgb(32, 32, 32)';
+  ctx.fillText(
+    ELEMENTS.button_start.text,
+    ELEMENTS.button_start.x,
+    ELEMENTS.button_start.y + ELEMENTS.button_start.height - 10,
+  );
+  canvas.addEventListener('click', ELEMENTS.button_start.onClick);
 }
 
 function drawReplayButton() {
