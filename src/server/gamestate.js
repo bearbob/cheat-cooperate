@@ -5,12 +5,18 @@ var players = {};
 
 /**
  * @private
- * @return {string}
+ * @return {string} A random name
  */
-const getPlayerName = () => {
+const getRandomName = () => {
   return constants.names[Math.floor(Math.random() * constants.names.length)];
 };
 
+/**
+ * @public
+ * Creates a new game room
+ * @param {string} roomId - The ID of the room that will be created
+ * @return {boolean} True if the room was created, otherwise false
+ */
 const createRoom = (roomId) => {
   if(rooms[roomId]) {
     return false;
@@ -21,10 +27,23 @@ const createRoom = (roomId) => {
   return true;
 };
 
+/**
+ * @private
+ * Close the room to start playing
+ * @param {string} roomId - The ID of the room that will be closed
+ * @return {undefined}
+ */
 const closeRoom = (roomId) => {
-  rooms[roomId].isClosed = true;
+  if(rooms[roomId]) {
+    rooms[roomId].isClosed = true;
+  }
 };
 
+/**
+ * @public
+ * @param {string} roomId - The ID of the room that will be queried
+ * @return {boolean} True if the room is open and players can join.
+ */
 const roomIsOpen = (roomId) => {
   if(!rooms[roomId] || rooms[roomId].isClosed) {
     return false;
@@ -33,7 +52,10 @@ const roomIsOpen = (roomId) => {
 };
 
 /**
+ * @public
  * Adds a new player to the room
+ * @param {string} roomId - The ID of the room the new player will be added to
+ * @param {string} playerId - The ID of the player that will be added
  * @return True, if the player was added, false, if the room is already closed
  */
 const addPlayer = (roomId, playerId) => {
@@ -41,7 +63,7 @@ const addPlayer = (roomId, playerId) => {
     return false;
   }
   players[playerId] = {
-    name: getPlayerName(),
+    name: getRandomName(),
     room: roomId,
     score: 0,
     state: constants.state.waitingForPlayers,
@@ -52,6 +74,11 @@ const addPlayer = (roomId, playerId) => {
   return true;
 };
 
+/**
+ * @public
+ * @param {string} playerId - The ID of the player that will be queried
+ * Delete a player. If the player was the last player in a room, the room is also deleted.
+ */
 const removePlayer = (playerId) => {
   console.log('A user disconnected: '+playerId);
   if(!players[playerId]) {
@@ -68,6 +95,11 @@ const removePlayer = (playerId) => {
   }
 };
 
+/**
+ * @public
+ * @param {string} playerId - The ID of the player that will be queried
+ * @return {string} The roomId the player is using
+ */
 const getRoomId = (playerId) => {
   if(players[playerId]) {
     return players[playerId].room;
@@ -75,14 +107,29 @@ const getRoomId = (playerId) => {
   return null;
 };
 
+/**
+ * @public
+ * @param {string} playerId - The ID of the player that will be queried
+ * @return {object} The player object
+ */
 const getPlayer = (playerId) => {
   return players[playerId];
 };
 
+/**
+ * @public
+ * @param {string} roomId - The ID of the room that will be queried
+ * @return {integer} The number of players in a room
+ */
 const countPlayers = (roomId) => {
   return getPlayerIDs(roomId).length;
 };
 
+/**
+ * @public
+ * @param {string} roomId - The ID of the room that will be queried
+ * @return {array} Array of player ids
+ */
 const getPlayerIDs = (roomId) => {
   let playersInRoom = [];
   for(let p in players) {
@@ -94,8 +141,9 @@ const getPlayerIDs = (roomId) => {
 };
 
 /**
- *
- * @return {integer} 0, if the vote triggered
+ * @public
+ * @param {string} playerId - The ID of the player that triggers the vote
+ * @return {integer} 0, if the vote triggered the game to start, 1 if other players still have to vote and 2 if the vote is invalid in the current state
  */
 const voteToStart = (playerId) => {
   if(!players[playerId]) {
@@ -114,6 +162,8 @@ const voteToStart = (playerId) => {
   }
   console.log('Got '+votes+' votes to start the game in room '+roomId);
   if(votes == countPlayers(roomId)) {
+    //the game will start, close the room
+    closeRoom(roomId);
     return 0;
   }
   return 1;
@@ -123,7 +173,6 @@ const voteToStart = (playerId) => {
 
 module.exports = {
   createRoom: createRoom,
-  closeRoom: closeRoom,
   roomIsOpen: roomIsOpen,
   getRoomId: getRoomId,
   addPlayer: addPlayer,
