@@ -108,7 +108,11 @@ module.exports = {
     let voteResult = game.voteToStart(socket.id);
     switch(voteResult) {
       case 0:
-        io.to(roomId).emit('gameIsStarting');
+        console.log('The game is starting in room '+roomId);
+        socket.to(roomId).emit('add_log', '<b>'+game.getPlayer(socket.id).name+'</b> voted to start.');
+        socket.emit('add_log', 'You voted to start.');
+        io.to(roomId).emit('add_log', 'The game is starting.');
+        //TODO send state to play first rounds
         break;
       case 1:
         socket.emit('voteResult', 'Waiting for other players to vote');

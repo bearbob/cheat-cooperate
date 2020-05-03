@@ -12,6 +12,46 @@ const getRandomName = () => {
 };
 
 /**
+ * @private
+ * Fisher-Yates shuffle (see https://stackoverflow.com/a/2450976).
+ * Changes the element order inplace
+ * @param {array} array The input array that will be shuffled
+ * @return {array}
+ */
+const shuffle = (array) => {
+  let currentIndex = array.length;
+  let temporaryValue;
+  let randomIndex;
+
+  // While there remain elements to shuffle...
+  while (currentIndex !== 0) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+};
+
+/**
+ * @private
+ * @param {string} roomId
+ */
+const setMatchUps = (roomId) => {
+  let players = getPlayerIDs(roomId);
+  let rOrdered = shuffle(players);
+  rooms[roomId].matches = {};
+  for(let i=0; i<rOrdered.length; i+=2) {
+    rooms[roomId].matches[rOrdered[i]] = rOrdered[i+1];
+    rooms[roomId].matches[rOrdered[i+1]] = rOrdered[i];
+  }
+};
+
+/**
  * @public
  * Creates a new game room
  * @param {string} roomId - The ID of the room that will be created
@@ -165,6 +205,7 @@ const voteToStart = (playerId) => {
   if(votes == playerCount) {
     //the game will start, close the room
     closeRoom(roomId);
+    setMatchUps(roomId);
     return 0;
   }
   return 1;

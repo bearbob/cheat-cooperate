@@ -21,7 +21,10 @@ function vote() {
 }
 
 function clearScreen() {
-  //TODO: Hide buttons
+  document.getElementById('canvas_buttons').style.display='none';
+  document.getElementById('button_vote').style.display='none';
+  document.getElementById('button_replay').style.display='none';
+  document.getElementById('canvas_message').innerHTML='';
 }
 
 function drawTextScreen(message) {
@@ -29,14 +32,13 @@ function drawTextScreen(message) {
 }
 
 function drawVoteButton() {
-  let button = '<div class="button">'+ELEMENTS.button_vote.text+'</div>';
-  document.getElementById('canvas_buttons').innerHTML=button;
+  document.getElementById('button_vote').style.display='inline';
 }
 
 function drawReplayButton() {
-
+  document.getElementById('button_replay').style.display='inline';
 }
 
 function drawDecisionInterface() {
-
+  document.getElementById('canvas_buttons').style.display='inline';
 }
