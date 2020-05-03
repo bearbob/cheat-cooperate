@@ -19,7 +19,16 @@
       <div id="game_id">Room: none</div>
       <div id="score">Score: -</div>
       <div id="playercount">Players: -</div>
-      <canvas id="interface_canvas"></canvas>
+      <div id="interface_canvas">
+        <div id="canvas_message"></div>
+      </div>
+      <!-- Buttons, shown depending on game state -->
+      <div id="button_vote" class="button dialog" onClick="vote()">Ready</div>
+      <div id="button_replay" class="button dialog" onClick="next()">Continue</div>
+      <div class="button_row" id="canvas_buttons">
+        <div id="button_cooperate" class="button cooperate" onClick="cooperate()">Continue</div>
+        <div id="button_cheat" class="button cheat" onClick="cheat()">Continue</div>
+      </div>
       <div id="game_log"></div>
     </div>
 
@@ -29,16 +38,15 @@
         <center>
           <input type="text" id="serverid_input" class="input" name="serverid">
         </center>
-        <div id="button_row">
-          <div id="server_create" class="button" onclick="createServer()">Create</div>
-          <div id="server_Join" class="button" onclick="joinServer()">Join</div>
+        <div class="button_row">
+          <div id="server_create" class="button dialog" onclick="createServer()">Create</div>
+          <div id="server_Join" class="button dialog" onclick="joinServer()">Join</div>
         </div>
         <div id="selection_error"></div>
       </div>
     </div>
   </body>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/lib/rough.js"></script>
   <script src="/static/constants.js"></script>
   <script src="/static/canvas.js"></script>
   <script src="/static/game.js"></script>

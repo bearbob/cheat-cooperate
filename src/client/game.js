@@ -82,5 +82,4 @@ socket.on('state', function(playerObject) {
 
 var currentState = STATE.decision;
 
-setupCanvas('interface_canvas');
 drawTextScreen('Not enough players');

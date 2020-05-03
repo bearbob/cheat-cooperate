@@ -49,7 +49,7 @@ canvas {
   width: 60%;
 }
 
-#button_row {
+.button_row {
   display: table;
   width: 100%;
   table-layout: fixed;
@@ -58,14 +58,37 @@ canvas {
 
 .button {
   border: 2px solid black;
-  background: rgb(0,155,214);
+  padding: 5px;
+  border-radius: 10px;
   display: table-cell;
   text-align: center;
 }
 
-.button:hover {
+.dialog {
+  background: rgb(0,155,214);
+}
+
+.dialog:hover {
   cursor: pointer;
   background: rgb(0,200,255);
+}
+
+.cooperate {
+  background: rgb(134,214,144);
+}
+
+.cooperate:hover {
+  cursor: pointer;
+  background: rgb(184,254,194);
+}
+
+.cheat {
+  background: rgb(255,47,24);
+}
+
+.cheat:hover {
+  cursor: pointer;
+  background: rgb(255,97,94);
 }
 
 #selection_error {
