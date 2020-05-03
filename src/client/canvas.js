@@ -89,7 +89,9 @@ function isInside(pos, rect){
          pos.y > rect.y;
 }
 
-function setupCanvas() {
+function setupCanvas(canvas_id) {
+  let canvas = document.getElementById(canvas_id);
+  let rc = rough.canvas(document.getElementById(canvas_id));
   //get DPI to fix the scaling, see https://medium.com/wdstack/fixing-html5-2d-canvas-blur-8ebe27db07da
   let dpi = window.devicePixelRatio;
   //get CSS height
@@ -97,6 +99,8 @@ function setupCanvas() {
   //the slice method gets rid of "px"
   let style_height = +getComputedStyle(canvas).getPropertyValue("height").slice(0, -2);//get CSS width
   let style_width = +getComputedStyle(canvas).getPropertyValue("width").slice(0, -2);
+  let width = style_width * dpi;
+  let height = style_height * dpi;
   //scale the canvas
   canvas.setAttribute('height', style_height * dpi);
   canvas.setAttribute('width', style_width * dpi);
@@ -117,8 +121,8 @@ function drawTextScreen(message) {
   ctx.fillStyle = 'rgb(0, 0, 0)';
   ctx.fillText(
     message,
-    15,
-    TEXTSIZE+15
+    0,
+    TEXTSIZE+1
   );
 }
 

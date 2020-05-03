@@ -31,7 +31,8 @@ module.exports = {
     console.log('Added new player to the game. Players: '+game.countPlayers(roomId));
     //update the playercount for all players in the room
     io.to(roomId).emit('playercount', game.countPlayers(roomId));
-    io.to(roomId).emit('add_log', '<b>'+game.getPlayer(socket.id).name+'</b> joined the room.');
+    socket.to(roomId).emit('add_log', '<b>'+game.getPlayer(socket.id).name+'</b> joined the room.');
+    socket.emit('add_log', 'You joined the room "'+roomId+'".');
 
     /*
     //this was used for the two-player variant to tell the other player that the game starts
@@ -111,7 +112,8 @@ module.exports = {
         break;
       case 1:
         socket.emit('voteResult', 'Waiting for other players to vote');
-        io.to(roomId).emit('add_log', '<b>'+game.getPlayer(socket.id).name+'</b> voted to start.');
+        socket.to(roomId).emit('add_log', '<b>'+game.getPlayer(socket.id).name+'</b> voted to start.');
+        socket.emit('add_log', 'You voted to start.');
         break;
       case 2:
         socket.emit('add_log', 'Cannot start with uneven player count');
