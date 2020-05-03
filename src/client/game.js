@@ -71,7 +71,7 @@ socket.on('state', function(stateObj) {
       break;
     case STATE.waitingForOpponent:
       clearScreen();
-      drawTextScreen('Waiting for the other player to decide...');
+      drawTextScreen('Waiting for the other players to decide...');
       break;
     case STATE.result:
       clearScreen();

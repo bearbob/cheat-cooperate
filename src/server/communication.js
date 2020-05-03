@@ -48,46 +48,14 @@ const playerJoined = (io, socket, roomId) => {
 
 
 const sendDecision = (io, socket, bPlayerCooperates) => {
+  game.setPlayerDecision(socket.id, bPlayerCooperates);
   let roomId = game.getRoomId(socket.id);
-  let player = game.getPlayer(socket.id);
-  if(player.cooperate != null && player.state != constants.state.decide) {
-    console.log('Player already voted.');
-    return;
-  }
-  player.cooperate = bPlayerCooperates;
-  player.state = constants.state.waitingForOpponent;
-  playerIds = game.getPlayerIDs(roomId);
+  game.calculateResults(roomId);
+  let playerIds = game.getPlayerIDs(roomId);
 
-  let waitingPlayers = 0;
-  let cheaters = 0;
-  playerIds.forEach(socketId => {
-    if (game.getPlayer(socketId).state == constants.state.waitingForOpponent) {
-      waitingPlayers++;
-      if(!game.getPlayer(socketId).cooperate) {
-        cheaters++;
-      }
-    }
+  playerIds.forEach(id => {
+    io.to(id).emit('state', game.getPlayerState(id));
   });
-  if(waitingPlayers == playerIds.length) {
-    playerIds.forEach(socketId => {
-      game.getPlayer(socketId).state = constants.state.result;
-      game.getPlayer(socketId).result = cheaters;
-      //TODO add or subtract points
-      if(cheaters == 0) {
-        game.getPlayer(socketId).score += 2;
-      } else if(cheaters != playerIds.length) {
-        if(game.getPlayer(socketId).cooperate) {
-          game.getPlayer(socketId).score -= 1;
-        } else {
-          game.getPlayer(socketId).score += 3;
-        }
-
-      }
-      io.to(socketId).emit('state', game.getPlayer(socketId));
-    });
-  } else {
-    socket.emit('state', player);
-  }
 };
 
 const replay = (io, socket) => {

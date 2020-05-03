@@ -98,6 +98,45 @@ const roomIsOpen = (roomId) => {
 
 /**
  * @public
+ * Calculate the results for each match and update the state objects
+ * @param {string} roomId - The ID of the room that will be queried
+ */
+const calculateResults = (roomId) => {
+  let room = rooms[roomId];
+
+  //check if all player have decided
+  playerIds = getPlayerIDs(roomId);
+  let waitingPlayers = playerIds.filter(p => getPlayer(p).state == constants.state.waitingForOpponent).length;
+
+  if(waitingPlayers != playerIds.length) {
+    return;
+  }
+  playerIds.forEach(playerId => {
+    //check the result of the match between the two players
+    let player = getPlayer(playerId);
+    let partner = getPlayer(room.matches[playerId]);
+
+    //the result is the number of cheaters in the match
+    let result = 0; //both cooperated
+    if(!partner.cooperate) {
+      if(!player.cooperate) {
+        result = 2; //both cheated
+      } else {
+        result = 1; //the player got betrayed!
+      }
+    } else if(!player.cooperate) {
+        result = 4; //the player betrayed his partner
+    }
+    player.state = constants.state.result;
+    player.result = result;
+    if(result === 0 || result === 4) {
+      player.score += 3;
+    }
+  });
+};
+
+/**
+ * @public
  * Adds a new player to the room
  * @param {string} roomId - The ID of the room the new player will be added to
  * @param {string} playerId - The ID of the player that will be added
@@ -174,7 +213,26 @@ const getPlayerState = (playerId) => {
     score: p.score,
     state: p.state,
     partner: getPlayer(rooms[r].matches[playerId]).name,
+    result: p.result,
   };
+};
+
+/**
+ * @public
+ * @param {string} playerId - The ID of the player that will be queried
+ * @param {boolean} decisionVal - True, if the player cooperate, otherwise false
+ */
+const setPlayerDecision = (playerId, decisionVal) => {
+  let player = getPlayer(playerId);
+  if(player.cooperate != null && player.state != constants.state.decide) {
+    console.log('Player already voted.');
+    return;
+  }
+  player.cooperate = decisionVal;
+  if(player.cooperate) {
+    player.score--;
+  }
+  player.state = constants.state.waitingForOpponent;
 };
 
 /**
@@ -238,10 +296,12 @@ module.exports = {
   createRoom: createRoom,
   roomIsOpen: roomIsOpen,
   getRoomId: getRoomId,
+  calculateResults: calculateResults,
   addPlayer: addPlayer,
   removePlayer: removePlayer,
   getPlayer: getPlayer,
   getPlayerState: getPlayerState,
+  setPlayerDecision: setPlayerDecision,
   countPlayers: countPlayers,
   getPlayerIDs: getPlayerIDs,
   voteToStart: voteToStart,
