@@ -56,16 +56,17 @@ socket.on('playercount', (count) => {
   }
 });
 
-socket.on('state', function(playerObject) {
-  console.log('Received state: '+playerObject.state);
-  setScore(playerObject.score);
-  switch(playerObject.state) {
+socket.on('state', function(stateObj) {
+  console.log('Received state: '+stateObj.state);
+  setScore(stateObj.score);
+  switch(stateObj.state) {
     case STATE.waitingForPlayers:
       clearScreen();
       drawTextScreen('Not enough players');
       break;
     case STATE.decision:
       clearScreen();
+      drawTextScreen('You are playing with <b>'+stateObj.partner+'</b>');
       drawDecisionInterface();
       break;
     case STATE.waitingForOpponent:
@@ -74,7 +75,7 @@ socket.on('state', function(playerObject) {
       break;
     case STATE.result:
       clearScreen();
-      drawTextScreen('Game has ended. Result: '+playerObject.result);
+      drawTextScreen('Game has ended. Result: '+stateObj.result);
       drawReplayButton();
       break;
   }

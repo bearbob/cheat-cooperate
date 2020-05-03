@@ -42,13 +42,17 @@ const shuffle = (array) => {
  * @param {string} roomId
  */
 const setMatchUps = (roomId) => {
+  console.log('Setting up new match order for room '+roomId);
   let players = getPlayerIDs(roomId);
   let rOrdered = shuffle(players);
   rooms[roomId].matches = {};
   for(let i=0; i<rOrdered.length; i+=2) {
     rooms[roomId].matches[rOrdered[i]] = rOrdered[i+1];
     rooms[roomId].matches[rOrdered[i+1]] = rOrdered[i];
+    getPlayer(rOrdered[i]).state = constants.state.decision;
+    getPlayer(rOrdered[i+1]).state = constants.state.decision;
   }
+  console.log('Finished new match order for room '+roomId);
 };
 
 /**
@@ -63,6 +67,7 @@ const createRoom = (roomId) => {
   }
   rooms[roomId] = {
     isClosed: false,
+    matches: {},
   };
   return true;
 };
@@ -158,6 +163,22 @@ const getPlayer = (playerId) => {
 
 /**
  * @public
+ * @param {string} playerId - The ID of the player that will be queried
+ * @return {object} The current game state for the player
+ */
+const getPlayerState = (playerId) => {
+  let p = getPlayer(playerId);
+  console.log('Handling request of state object for player '+playerId+' with state '+p.state);
+  let r = getRoomId(playerId);
+  return {
+    score: p.score,
+    state: p.state,
+    partner: getPlayer(rooms[r].matches[playerId]).name,
+  };
+};
+
+/**
+ * @public
  * @param {string} roomId - The ID of the room that will be queried
  * @return {integer} The number of players in a room
  */
@@ -220,6 +241,7 @@ module.exports = {
   addPlayer: addPlayer,
   removePlayer: removePlayer,
   getPlayer: getPlayer,
+  getPlayerState: getPlayerState,
   countPlayers: countPlayers,
   getPlayerIDs: getPlayerIDs,
   voteToStart: voteToStart,
