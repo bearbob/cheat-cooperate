@@ -64,6 +64,10 @@ socket.on('state', function(stateObj) {
       clearScreen();
       drawTextScreen('Not enough players');
       break;
+    case STATE.waitingForNextRound:
+      clearScreen();
+      drawTextScreen('Waiting for the other players to continue...');
+      break;
     case STATE.decision:
       clearScreen();
       drawTextScreen('You are playing with <b>'+stateObj.partner+'</b>');
@@ -75,7 +79,22 @@ socket.on('state', function(stateObj) {
       break;
     case STATE.result:
       clearScreen();
-      drawTextScreen('Game has ended. Result: '+stateObj.result);
+      let msg = 'The round has ended. ';
+      switch(stateObj.result) {
+        case 0:
+          msg += 'You successfully worked together!';
+          break;
+        case 1:
+          msg += 'You have been betrayed!';
+          break;
+        case 2:
+          msg += 'You both tried to betray each other.';
+          break;
+        case 3:
+          msg += 'You successfully betrayed your partner!';
+          break;
+      }
+      drawTextScreen(msg);
       drawReplayButton();
       break;
   }

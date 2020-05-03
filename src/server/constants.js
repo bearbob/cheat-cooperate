@@ -4,6 +4,7 @@ const STATE = {
   decision: 'decision',
   waitingForOpponent: 'waitingForOpponent',
   result: 'result',
+  waitingForNextRound: 'waitingForNextRound',
   maxPlayersReached: 'maxPlayersReached',
 };
 Object.freeze(STATE);

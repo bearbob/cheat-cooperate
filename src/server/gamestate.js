@@ -130,7 +130,7 @@ const calculateResults = (roomId) => {
         result = 1; //the player got betrayed!
       }
     } else if(!player.cooperate) {
-        result = 4; //the player betrayed his partner
+        result = 3; //the player betrayed his partner
     }
     player.state = constants.state.result;
     player.result = result;
@@ -307,11 +307,11 @@ const voteNextRound = (playerId) => {
     return false;
   }
   player.cooperate = null;
-  player.state = constants.state.waitingForPlayers;
+  player.state = constants.state.waitingForNextRound;
 
   //check if all players are waiting
   let playerIds = getPlayerIDs(player.room);
-  let waitingPlayers = playerIds.filter(p => getPlayer(p).state == constants.state.waitingForPlayers).length;
+  let waitingPlayers = playerIds.filter(p => getPlayer(p).state == constants.state.waitingForNextRound).length;
 
   if(waitingPlayers != playerIds.length) {
     return false;
