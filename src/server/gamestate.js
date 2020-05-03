@@ -295,6 +295,32 @@ const voteToStart = (playerId) => {
   return 1;
 };
 
+/**
+ * @public
+ * @param {string} playerId - The ID of the player that triggers the vote
+ * @return {boolean} True if the vote triggered the next round for all players
+ */
+const voteNextRound = (playerId) => {
+  let player = getPlayer(playerId);
+  if(player.state != constants.state.result) {
+    console.log('Player '+playerId+' cannot replay right now');
+    return false;
+  }
+  player.cooperate = null;
+  player.state = constants.state.waitingForPlayers;
+
+  //check if all players are waiting
+  let playerIds = getPlayerIDs(player.room);
+  let waitingPlayers = playerIds.filter(p => getPlayer(p).state == constants.state.waitingForPlayers).length;
+
+  if(waitingPlayers != playerIds.length) {
+    return false;
+  }
+  //all players are ready for the next round
+  setMatchUps(getRoomId(playerId));
+  return true;
+};
+
 
 
 module.exports = {
@@ -311,4 +337,5 @@ module.exports = {
   countPlayers: countPlayers,
   getPlayerIDs: getPlayerIDs,
   voteToStart: voteToStart,
+  voteNextRound: voteNextRound,
 };

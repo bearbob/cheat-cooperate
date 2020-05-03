@@ -59,15 +59,11 @@ const sendDecision = (io, socket, bPlayerCooperates) => {
 };
 
 const replay = (io, socket) => {
-  let roomId = game.getRoomId(socket.id);
-  let player = game.getPlayer(socket.id);
-  if(player.state != constants.state.result) {
-    console.log('Player cannot replay right now');
-    return;
+  if(game.voteNextRound(socket.id)) {
+    broadcastState(io, socket);
+  } else {
+    socket.emit('state', game.getPlayerState(socket.id));
   }
-  player.cooperate = null;
-  player.state = constants.state.decision;
-  socket.emit('state', player);
 };
 
 const broadcastState = (io, socket) => {
