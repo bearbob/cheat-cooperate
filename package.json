@@ -4,7 +4,7 @@
   "description": "A node multiplayer game",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "jest": "^25.5.4"
   }
 }

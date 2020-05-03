@@ -3,6 +3,11 @@ var constants = require('./constants');
 var rooms = {};
 var players = {};
 
+const cleanState = () => {
+  rooms = {};
+  players = {};
+};
+
 /**
  * @private
  * @return {string} A random name
@@ -293,6 +298,7 @@ const voteToStart = (playerId) => {
 
 
 module.exports = {
+  cleanState: cleanState,
   createRoom: createRoom,
   roomIsOpen: roomIsOpen,
   getRoomId: getRoomId,
