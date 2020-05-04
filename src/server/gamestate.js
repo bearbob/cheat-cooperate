@@ -134,7 +134,7 @@ const calculateResults = (roomId) => {
     }
     player.state = constants.state.result;
     player.result = result;
-    if(result === 0 || result === 4) {
+    if(result === 0 || result === 3) {
       player.score += 3;
     }
   });
@@ -321,6 +321,18 @@ const voteNextRound = (playerId) => {
   return true;
 };
 
+const getRanking = (roomId) => {
+  let playerIds = getPlayerIDs(roomId);
+  let ranking = [];
+  playerIds.forEach(playerId => {
+    //check the result of the match between the two players
+    let player = getPlayer(playerId);
+    ranking.push({ name: player.name, score: player.score });
+  });
+  ranking.sort((a,b) => b.score - a.score);
+  return ranking;
+};
+
 
 
 module.exports = {
@@ -328,6 +340,7 @@ module.exports = {
   createRoom: createRoom,
   roomIsOpen: roomIsOpen,
   getRoomId: getRoomId,
+  getRanking: getRanking,
   calculateResults: calculateResults,
   addPlayer: addPlayer,
   removePlayer: removePlayer,
