@@ -321,13 +321,16 @@ const voteNextRound = (playerId) => {
   return true;
 };
 
-const getRanking = (roomId) => {
+
+const getRanking = (requestingPlayerId) => {
+  let roomId = getRoomId(requestingPlayerId);
   let playerIds = getPlayerIDs(roomId);
   let ranking = [];
   playerIds.forEach(playerId => {
     //check the result of the match between the two players
     let player = getPlayer(playerId);
-    ranking.push({ name: player.name, score: player.score });
+    let name = (playerId != requestingPlayerId)?player.name : 'You';
+    ranking.push({ name: name, score: player.score });
   });
   ranking.sort((a,b) => b.score - a.score);
   return ranking;

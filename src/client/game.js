@@ -43,6 +43,14 @@ socket.on('add_log', (message) => {
   logElement.innerHTML=message+'<br/>'+logElement.innerHTML;
 });
 
+socket.on('ranking', (array) => {
+  let message = '';
+  array.forEach((item, i) => {
+    message += '<br/>' + (i+1) + '. ' + item.name;
+  });
+  document.getElementById('ranking').innerHTML = 'Ranking: '+message;
+});
+
 socket.on('playercount', (count) => {
   console.log('Players in the room: '+count);
   document.getElementById('playercount').innerHTML='Players: '+count;

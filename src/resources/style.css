@@ -60,11 +60,6 @@ canvas {
 .section {
   padding: 5px;
   border-top: 2px dashed black;
-  float: clear;
-}
-
-.left {
-  float: left;
 }
 
 .container {

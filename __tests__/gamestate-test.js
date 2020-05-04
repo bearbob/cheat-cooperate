@@ -2,11 +2,17 @@ var game = require('../src/server/gamestate');
 var constants = require('../src/server/constants');
 
 
-let setupGame = (roomId, players) => {
+const setupGame = (roomId, players) => {
   game.createRoom(roomId);
   players.forEach(p => game.addPlayer(roomId, p));
   players.forEach(p => game.voteToStart(p));
 };
+
+var roomId = 'test';
+var a = 'a';
+var b = 'b';
+var c = 'c';
+var d = 'd';
 
 afterEach(() => {
   game.cleanState();
@@ -56,18 +62,11 @@ test('adding multiple players', () => {
 });
 
 test('adding multiple players with helper function', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
-  let c = 'c';
   setupGame(roomId, [a, b, c]);
   expect(game.countPlayers('test')).toBe(3);
 });
 
 test('trying to add a player after the game has started', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
   game.createRoom(roomId);
   game.addPlayer(roomId, a);
   game.addPlayer(roomId, b);
@@ -105,9 +104,6 @@ test('retrieve room ID', () => {
 });
 
 test('room is open after players joined', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
   game.createRoom(roomId);
   game.addPlayer(roomId, a);
   game.addPlayer(roomId, b);
@@ -115,9 +111,6 @@ test('room is open after players joined', () => {
 });
 
 test('vote to start game', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
   game.createRoom(roomId);
   game.addPlayer(roomId, a);
   game.addPlayer(roomId, b);
@@ -129,10 +122,6 @@ test('vote to start game', () => {
 });
 
 test('vote to start game (uneven)', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
-  let c = 'c';
   game.createRoom(roomId);
   game.addPlayer(roomId, a);
   game.addPlayer(roomId, b);
@@ -144,10 +133,18 @@ test('vote to start game (uneven)', () => {
 
 //======================== Test getRanking ========================//
 
+test('ranking result score is the same for different players', () => {
+  setupGame(roomId, [a, b]);
+  expect(game.roomIsOpen(roomId)).toBe(false);
+
+  game.setPlayerDecision(a, true);
+  game.setPlayerDecision(b, false);
+  game.calculateResults(roomId);
+  expect(game.getRanking(a)[0].score).toBe(game.getRanking(b)[0].score);
+  expect(game.getRanking(a)[1].score).toBe(game.getRanking(b)[1].score);
+});
+
 test('normal ranking with different scores', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
   setupGame(roomId, [a, b]);
   expect(game.roomIsOpen(roomId)).toBe(false);
 
@@ -156,16 +153,24 @@ test('normal ranking with different scores', () => {
   game.calculateResults(roomId);
   expect(game.getPlayerState(a).score).toBe(-1);
   expect(game.getPlayerState(b).score).toBe(3);
-  expect(game.getRanking(roomId)[0].score).toBe(3);
-  expect(game.getRanking(roomId)[1].score).toBe(-1);
+  expect(game.getRanking(a)[0].score).toBe(3);
+  expect(game.getRanking(a)[1].score).toBe(-1);
+});
+
+test('normal ranking with different scores and given playerId', () => {
+  setupGame(roomId, [a, b]);
+  expect(game.roomIsOpen(roomId)).toBe(false);
+
+  game.setPlayerDecision(a, true);
+  game.setPlayerDecision(b, false);
+  game.calculateResults(roomId);
+  expect(game.getRanking(a)[1].name).toBe('You');
+  expect(game.getRanking(a)[1].score).toBe(-1);
 });
 
 //======================== Complex gameplay simulations ========================//
 
 test('play example round with 2 players: coop/coop', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
   setupGame(roomId, [a, b]);
 
   game.setPlayerDecision(a, true);
@@ -194,12 +199,7 @@ test('play example round with 2 players: coop/coop', () => {
   expect(game.getPlayerState(b).score).toBe(4);
 });
 
-test('play example round with 4 players: coop/coop', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
-  let c = 'c';
-  let d = 'd';
+test('play example round with 4 players: coop (1 round)', () => {
   setupGame(roomId, [a, b, c, d]);
 
   game.setPlayerDecision(a, true);
@@ -211,13 +211,21 @@ test('play example round with 4 players: coop/coop', () => {
   expect(game.getPlayerState(b).score).toBe(2);
   expect(game.getPlayerState(c).score).toBe(2);
   expect(game.getPlayerState(d).score).toBe(2);
+});
+
+test('play example round with 4 players: coop (2 rounds)', () => {
+  setupGame(roomId, [a, b, c, d]);
+
+  game.setPlayerDecision(a, true);
+  game.setPlayerDecision(b, true);
+  game.setPlayerDecision(c, true);
+  game.setPlayerDecision(d, true);
+  game.calculateResults(roomId);
 
   expect(game.voteNextRound(a)).toBe(false);
   expect(game.voteNextRound(b)).toBe(false);
   expect(game.voteNextRound(c)).toBe(false);
   expect(game.voteNextRound(d)).toBe(true);
-  expect(game.getPlayerState(a).state).toBe(constants.state.decision);
-  expect(game.getPlayerState(b).state).toBe(constants.state.decision);
 
   game.setPlayerDecision(a, true);
   game.setPlayerDecision(b, true);
@@ -230,10 +238,43 @@ test('play example round with 4 players: coop/coop', () => {
   expect(game.getPlayerState(d).score).toBe(4);
 });
 
+test('play example round with 4 players: coop (3 rounds)', () => {
+  setupGame(roomId, [a, b, c, d]);
+
+  game.setPlayerDecision(a, true);
+  game.setPlayerDecision(b, true);
+  game.setPlayerDecision(c, true);
+  game.setPlayerDecision(d, true);
+  game.calculateResults(roomId);
+
+  expect(game.voteNextRound(a)).toBe(false);
+  expect(game.voteNextRound(b)).toBe(false);
+  expect(game.voteNextRound(c)).toBe(false);
+  expect(game.voteNextRound(d)).toBe(true);
+
+  game.setPlayerDecision(a, true);
+  game.setPlayerDecision(b, true);
+  game.setPlayerDecision(c, true);
+  game.setPlayerDecision(d, true);
+  game.calculateResults(roomId);
+
+  expect(game.voteNextRound(a)).toBe(false);
+  expect(game.voteNextRound(b)).toBe(false);
+  expect(game.voteNextRound(c)).toBe(false);
+  expect(game.voteNextRound(d)).toBe(true);
+
+  game.setPlayerDecision(a, true);
+  game.setPlayerDecision(b, true);
+  game.setPlayerDecision(c, true);
+  game.setPlayerDecision(d, true);
+  game.calculateResults(roomId);
+  expect(game.getPlayerState(a).score).toBe(6);
+  expect(game.getPlayerState(b).score).toBe(6);
+  expect(game.getPlayerState(c).score).toBe(6);
+  expect(game.getPlayerState(d).score).toBe(6);
+});
+
 test('play example round with 2 players: coop', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
   setupGame(roomId, [a, b]);
 
   game.setPlayerDecision(a, true);
@@ -248,9 +289,6 @@ test('play example round with 2 players: coop', () => {
 });
 
 test('play example round with 2 players: coop (1 round with vote)', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
   setupGame(roomId, [a, b]);
 
   game.setPlayerDecision(a, true);
@@ -264,9 +302,6 @@ test('play example round with 2 players: coop (1 round with vote)', () => {
 });
 
 test('play example round with 2 players: coop/cheat (2 rounds)', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
   setupGame(roomId, [a, b]);
 
   game.setPlayerDecision(a, true);
@@ -287,9 +322,6 @@ test('play example round with 2 players: coop/cheat (2 rounds)', () => {
 });
 
 test('play example round with 2 players: cheat (1 round)', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
   setupGame(roomId, [a, b]);
 
   game.setPlayerDecision(a, true);
@@ -304,9 +336,6 @@ test('play example round with 2 players: cheat (1 round)', () => {
 });
 
 test('play example round with 2 players: cheat and restart', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
   setupGame(roomId, [a, b]);
 
   game.setPlayerDecision(a, true);
@@ -320,9 +349,6 @@ test('play example round with 2 players: cheat and restart', () => {
 });
 
 test('play example round with 2 players: cheat/cheat (2 rounds)', () => {
-  let roomId = 'test';
-  let a = 'a';
-  let b = 'b';
   setupGame(roomId, [a, b]);
 
   game.setPlayerDecision(a, true);

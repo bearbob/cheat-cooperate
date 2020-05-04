@@ -72,6 +72,7 @@ const broadcastState = (io, socket) => {
 
   playerIds.forEach(id => {
     io.to(id).emit('state', game.getPlayerState(id));
+    io.to(id).emit('ranking', game.getRanking(id));
   });
 };
 
