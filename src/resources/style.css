@@ -57,6 +57,10 @@ canvas {
   display: none;
 }
 
+#game_info {
+  background: #f7e47b;
+}
+
 .section {
   padding: 5px;
   border-top: 2px dashed black;
@@ -64,6 +68,11 @@ canvas {
 
 .right {
   float: right;
+  border: 2px dashed black;
+  background: #b2f2ff;
+  padding: 10px;
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 20px;
 }
 
 .container {
