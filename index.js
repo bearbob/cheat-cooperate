@@ -1,3 +1,13 @@
+/**
+ * Cheat-Cooperate
+ * @author Björn Schmidt
+ * @created 2020-04-27
+ */
+
+// Server constants
+const VERSION = '1.0.0';
+const APPNAME = 'Cheat-Cooperate';
+
 // Dependencies
 var express = require('express');
 var http = require('http');
@@ -22,6 +32,7 @@ app.get('/', function(request, response) {
 
 // Starts the server.
 server.listen(5000, function() {
+  console.log('Running '+APPNAME+' v'+VERSION);
   console.log('Starting server on port 5000');
 });
 
