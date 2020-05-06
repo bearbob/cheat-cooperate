@@ -24,6 +24,11 @@ test('create new room', () => {
   expect(game.createRoom('test')).toBe(true);
 });
 
+test('create two different rooms', () => {
+  expect(game.createRoom('test_a')).toBe(true);
+  expect(game.createRoom('test_b')).toBe(true);
+});
+
 test('create duplicate room', () => {
   expect(game.createRoom('test')).toBe(true);
   expect(game.createRoom('test')).toBe(false);
@@ -59,6 +64,21 @@ test('adding multiple players', () => {
   game.addPlayer('test', 'b');
   game.addPlayer('test', 'c');
   expect(game.countPlayers('test')).toBe(3);
+});
+
+test('adding multiple players to two rooms', () => {
+  game.createRoom('test');
+  expect(game.countPlayers('test')).toBe(0);
+  game.addPlayer('test', 'a');
+  game.addPlayer('test', 'b');
+  game.addPlayer('test', 'c');
+
+  game.createRoom('test2');
+  expect(game.countPlayers('test2')).toBe(0);
+  game.addPlayer('test2', 'a2');
+  game.addPlayer('test2', 'b2');
+  game.addPlayer('test2', 'c2');
+  expect(game.countPlayers('test2')).toBe(3);
 });
 
 test('adding multiple players with helper function', () => {
@@ -129,6 +149,23 @@ test('vote to start game (uneven)', () => {
 
   expect(game.voteToStart(a)).toBe(2);
   expect(game.roomIsOpen(roomId)).toBe(true);
+});
+
+test('vote to start game in two rooms', () => {
+  game.createRoom(roomId);
+  game.addPlayer(roomId, a);
+  game.addPlayer(roomId, b);
+  game.voteToStart(a);
+  game.voteToStart(b);
+
+  game.createRoom(roomId+'2');
+  game.addPlayer(roomId+'2', a+'2');
+  game.addPlayer(roomId+'2', b+'2');
+
+  expect(game.voteToStart(a+'2')).toBe(1);
+  expect(game.voteToStart(b+'2')).toBe(0);
+  expect(game.roomIsOpen(roomId+'2')).toBe(false);
+  expect(game.getPlayerState(a+'2').state).toBe(constants.state.decision);
 });
 
 //======================== Test getRanking ========================//

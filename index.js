@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
     if(joined) {
       socket.emit('joined_game', {id: roomId});
     } else {
-      socket.emit('join_error', 'Game with given ID does not exist.');
+      socket.emit('join_error', 'Game with given ID does not exist or is locked.');
     }
   });
 

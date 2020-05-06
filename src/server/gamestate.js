@@ -199,7 +199,7 @@ const getRoomId = (playerId) => {
 /**
  * @public
  * @param {string} playerId - The ID of the player that will be queried
- * @return {object} The player object
+ * @return {object} The player object or undefined if no such object exists
  */
 const getPlayer = (playerId) => {
   return players[playerId];
@@ -274,19 +274,20 @@ const voteToStart = (playerId) => {
     console.log('Unknown player tried to vote. The server will not respond.');
     return;
   }
-  let roomId = players[playerId].room;
+  let roomId = getRoomId(playerId);
   let playerCount = countPlayers(roomId);
   if(playerCount%2 != 0) {
     console.log('Player '+playerId+' tried to start the game, but the player count in '+roomId+' is uneven.');
     return 2;
   }
-  players[playerId].voteToStart = true;
+  getPlayer(playerId).voteToStart = true;
   let votes = 0;
-  for(let pid in players) {
-    votes += players[pid].voteToStart?1:0;
+  let playerIds = getPlayerIDs(roomId);
+  for(let pid of playerIds) {
+    votes += getPlayer(pid).voteToStart?1:0;
   }
   console.log('Got '+votes+'/'+playerCount+' votes to start the game in room '+roomId);
-  if(votes == playerCount) {
+  if(votes >= playerCount) {
     //the game will start, close the room
     closeRoom(roomId);
     setMatchUps(roomId);
