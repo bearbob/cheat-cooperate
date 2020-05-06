@@ -167,21 +167,23 @@ const addPlayer = (roomId, playerId) => {
  * @public
  * @param {string} playerId - The ID of the player that will be queried
  * Delete a player. If the player was the last player in a room, the room is also deleted.
+ * @return {string} The room the player was removed from or null, if the player does not exist
  */
 const removePlayer = (playerId) => {
   console.log('A user disconnected: '+playerId);
-  if(!players[playerId]) {
-    return; //already deleted or never existed in this life cycle
+  let player = getPlayer(playerId);
+  if(!player) {
+    return null; //already deleted or never existed in this life cycle
   }
-  let roomId = players[playerId].room;
-  if(players[playerId]) {
-    console.log('Deleting player "'+playerId+'" from room "'+players[playerId].room+'"');
-      delete players[playerId];
-  }
+  let roomId = player.room;
+  console.log('Deleting player "'+playerId+'" from room "'+player.room+'"');
+  delete players[playerId];
+  
   if(roomId && countPlayers(roomId) < 1) {
     console.log('Deleting empty room "'+roomId+'"');
     delete rooms[roomId];
   }
+  return roomId;
 };
 
 /**

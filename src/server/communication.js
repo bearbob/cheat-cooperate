@@ -19,8 +19,16 @@ const createServer = (socket, roomId) => {
   }
 };
 
-const playerDisconnected = (socket) => {
-  game.removePlayer(socket.id);
+const playerDisconnected = (io, socket) => {
+  let name = null;
+  if(game.getPlayer(socket.id)) {
+    name = game.getPlayer(socket.id).name;
+  }
+  let roomId = game.removePlayer(socket.id);
+  if(roomId) {
+      io.to(roomId).emit('playercount', game.countPlayers(roomId));
+      io.to(roomId).emit('add_log', '<b>'+name+'</b> disconnected.');
+  }
 };
 
 const playerJoined = (io, socket, roomId) => {

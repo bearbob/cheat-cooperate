@@ -60,7 +60,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    communication.playerDisconnected(socket);
+    communication.playerDisconnected(io, socket);
   });
 
   socket.on('cooperate', (cooperates) => {
