@@ -1,6 +1,13 @@
 var constants = require('./constants');
 var game = require('./gamestate');
 
+/**
+ * @public
+ * Creates a new game room
+ * @param {object} socket The socket of the player that tries to create the room
+ * @param {string} roomId The identifier of the room
+ * @return {boolean} True, if the room was created, false, if a room with this name already exists
+ */
 const createServer = (socket, roomId) => {
   console.log('Creating game room with id "'+roomId+'"');
   if(game.createRoom(roomId)) {
@@ -33,16 +40,6 @@ const playerJoined = (io, socket, roomId) => {
   socket.to(roomId).emit('add_log', '<b>'+game.getPlayer(socket.id).name+'</b> joined the room.');
   socket.emit('add_log', 'You joined the room "'+roomId+'".');
 
-  /*
-  //this was used for the two-player variant to tell the other player that the game starts
-  if(game.countPlayers(roomId) == 2) {
-    let playerIds = game.getPlayerIDs(roomId);
-    playerIds.forEach(socketId => {
-      game.getPlayer(socketId).state = constants.state.decision;
-      io.to(socketId).emit('state', game.getPlayer(socketId));
-    });
-  }
-  */
   return true;
 };
 
@@ -59,11 +56,18 @@ const sendDecision = (io, socket, bPlayerCooperates) => {
 };
 
 const replay = (io, socket) => {
+  //initiate next round
   if(game.voteNextRound(socket.id)) {
     broadcastState(io, socket);
   } else {
     socket.emit('state', game.getPlayerState(socket.id));
   }
+  //the round is ending (or has ended), show the results in the log before we go on
+  let player = game.getPlayer(socket.id);
+  let msg = '<b>'+player.name+'</b> decided to ';
+  msg += (player.cooperate)? 'cooperate with':'betray';
+  msg += ' their partner.';
+  socket.to(game.getRoomId(socket.id)).emit('add_log',msg);
 };
 
 const broadcastState = (io, socket) => {

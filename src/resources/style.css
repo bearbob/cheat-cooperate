@@ -62,6 +62,10 @@ canvas {
   border-top: 2px dashed black;
 }
 
+.right {
+  float: right;
+}
+
 .container {
   padding-top: 10px;
   padding-bottom: 5px;

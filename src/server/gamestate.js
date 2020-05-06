@@ -229,8 +229,8 @@ const getPlayerState = (playerId) => {
  */
 const setPlayerDecision = (playerId, decisionVal) => {
   let player = getPlayer(playerId);
-  if(player.cooperate != null && player.state != constants.state.decide) {
-    console.log('Player already voted.');
+  if(player.state != constants.state.decision) {
+    console.log('Player '+playerId+' already decided (state '+player.state+')');
     return;
   }
   player.cooperate = decisionVal;
@@ -306,7 +306,7 @@ const voteNextRound = (playerId) => {
     console.log('Player '+playerId+' cannot replay right now');
     return false;
   }
-  player.cooperate = null;
+  //player.cooperate = null;
   player.state = constants.state.waitingForNextRound;
 
   //check if all players are waiting
@@ -321,7 +321,11 @@ const voteNextRound = (playerId) => {
   return true;
 };
 
-
+/**
+ * @public
+ * @param {string} requestingPlayerId - The ID of the player that requests the ranking. The name of this player will be replaced with "You"
+ * @return {array}
+ */
 const getRanking = (requestingPlayerId) => {
   let roomId = getRoomId(requestingPlayerId);
   let playerIds = getPlayerIDs(roomId);
