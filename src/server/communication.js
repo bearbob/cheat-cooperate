@@ -19,6 +19,12 @@ const createServer = (socket, roomId) => {
   }
 };
 
+/**
+ * @public
+ * Removes a player from the game
+ * @param {object} io Broadcast object to notify the remaining players of the disconnect
+ * @param {object} socket The socket of the player that left the room
+ */
 const playerDisconnected = (io, socket) => {
   let name = null;
   if(game.getPlayer(socket.id)) {
@@ -31,6 +37,14 @@ const playerDisconnected = (io, socket) => {
   }
 };
 
+/**
+ * @public
+ * Adds a player to the room
+ * @param {object} io Broadcast object to notify the other players
+ * @param {object} socket The socket of the player that tries to join the room
+ * @param {string} roomId The identifier of the room
+ * @return {boolean} True, if the player joined, false, if a problem occured (e.g. the room does not exist)
+ */
 const playerJoined = (io, socket, roomId) => {
   //a new player wants to join. Check if this is possible
   if(!game.roomIsOpen(roomId)) {
@@ -51,7 +65,13 @@ const playerJoined = (io, socket, roomId) => {
   return true;
 };
 
-
+/**
+ * @public
+ * Receive the decision of the player
+ * @param {object} io Broadcast object to notify the other players
+ * @param {object} socket The socket of the player
+ * @param {boolean} bPlayerCooperates The decision - true if cooperate, otherwise false
+ */
 const sendDecision = (io, socket, bPlayerCooperates) => {
   game.setPlayerDecision(socket.id, bPlayerCooperates);
   let roomId = game.getRoomId(socket.id);
@@ -63,6 +83,12 @@ const sendDecision = (io, socket, bPlayerCooperates) => {
   });
 };
 
+/**
+ * @public
+ * The player wants to begin the next round
+ * @param {object} io Broadcast object to notify the other players
+ * @param {object} socket The socket of the player
+ */
 const replay = (io, socket) => {
   //initiate next round
   if(game.voteNextRound(socket.id)) {
@@ -78,6 +104,12 @@ const replay = (io, socket) => {
   socket.to(game.getRoomId(socket.id)).emit('add_log',msg);
 };
 
+/**
+ * @public
+ * Broadcast the current game state and ranking to each player after a player took an action
+ * @param {object} io Broadcast object to notify the other players
+ * @param {object} socket The socket of the player that did something
+ */
 const broadcastState = (io, socket) => {
   let roomId = game.getRoomId(socket.id);
   let playerIds = game.getPlayerIDs(roomId);
@@ -88,6 +120,12 @@ const broadcastState = (io, socket) => {
   });
 };
 
+/**
+ * @public
+ * A player wants to start the game
+ * @param {object} io Broadcast object to notify the other players
+ * @param {object} socket The socket of the player
+ */
 const sendStartVote = (io, socket) => {
   let roomId = game.getRoomId(socket.id);
   let voteResult = game.voteToStart(socket.id);

@@ -38,7 +38,6 @@ server.listen(5000, function() {
 
 //------------------------------------------------------------------
 
-var players = {};
 // Add the WebSocket handlers
 io.on('connection', (socket) => {
   console.log('A user connected');

@@ -1,6 +1,10 @@
 var socket = io();
 var roomId;
 
+/**
+ * @public
+ * Sends a identifier to the server to create a new game room with
+ */
 function createServer() {
   let id = encodeURI(document.getElementById('serverid_input').value);
   console.log('Attempting to create server "'+id+'"');
@@ -65,7 +69,7 @@ socket.on('playercount', (count) => {
     drawVoteButton();
   } else {
     clearScreen();
-    drawTextScreen('Not enough players');
+    drawTextScreen('Not enough players to continue.');
   }
 });
 
@@ -113,6 +117,4 @@ socket.on('state', function(stateObj) {
   }
 });
 
-var currentState = STATE.decision;
-
-drawTextScreen('Not enough players');
+drawTextScreen('Not enough players to start.');
