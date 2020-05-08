@@ -64,14 +64,33 @@ io.on('connection', (socket) => {
   });
 
   socket.on('cooperate', (cooperates) => {
-    communication.sendDecision(io, socket, cooperates);
+    try {
+      communication.sendDecision(io, socket, cooperates);
+    } catch(aEx) {
+      console.log('The game has encountered an exception in "communication.sendDecision(...)');
+      console.log(aEx);
+      socket.emit('crash');
+    }
   });
 
   socket.on('replay', () => {
-    communication.replay(io, socket);
+    try {
+      communication.replay(io, socket);
+    } catch(aEx) {
+      console.log('The game has encountered an exception in "communication.replay(...)');
+      console.log(aEx);
+      socket.emit('crash');
+    }
   });
 
   socket.on('vote', () => {
-    communication.sendStartVote(io, socket);
+    try {
+      communication.sendStartVote(io, socket);
+    } catch(aEx) {
+      console.log('The game has encountered an exception in "communication.sendStartVote(...)');
+      console.log(aEx);
+      socket.emit('crash');
+    }
+
   });
 });

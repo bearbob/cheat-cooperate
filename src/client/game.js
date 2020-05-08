@@ -37,6 +37,11 @@ socket.on('join_error', (message) => {
   document.getElementById('selection_error').innerHTML=message;
 });
 
+socket.on('crash', () => {
+  console.log('Game crashed.');
+  document.getElementById('error_screen').style.display='inherit';
+});
+
 socket.on('add_log', (message) => {
   console.log('Received log message: '+message);
   let logElement = document.getElementById('game_log');

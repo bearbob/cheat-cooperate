@@ -51,6 +51,7 @@ const setMatchUps = (roomId) => {
   let players = getPlayerIDs(roomId);
   let rOrdered = shuffle(players);
   rooms[roomId].matches = {};
+  //if one of the players disconnected during the last round, the game will crash at this point, forcing all players to reload
   for(let i=0; i<rOrdered.length; i+=2) {
     rooms[roomId].matches[rOrdered[i]] = rOrdered[i+1];
     rooms[roomId].matches[rOrdered[i+1]] = rOrdered[i];
@@ -123,6 +124,13 @@ const calculateResults = (roomId) => {
 
     //the result is the number of cheaters in the match
     let result = 0; //both cooperated
+    if(!partner) {
+        //the player disconnected. Use a random choice to continue the game
+        //the bot has a higher chance to cooperate than to cheat
+        partner = {
+          cooperate: Math.random() >= 0.4
+        };
+    }
     if(!partner.cooperate) {
       if(!player.cooperate) {
         result = 2; //both cheated
@@ -178,7 +186,7 @@ const removePlayer = (playerId) => {
   let roomId = player.room;
   console.log('Deleting player "'+playerId+'" from room "'+player.room+'"');
   delete players[playerId];
-  
+
   if(roomId && countPlayers(roomId) < 1) {
     console.log('Deleting empty room "'+roomId+'"');
     delete rooms[roomId];
