@@ -64,7 +64,7 @@ This is  a list of things you need to do to use the software.
 
 1. Clone the repo
 ```sh
-git clone https://github.com/bearbob/LiftingLog.git
+git clone https://github.com/bearbob/cheat-cooperate.git
 ```
 2. Install NPM packages
 ```sh
